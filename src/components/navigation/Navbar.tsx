@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import ThemeToggle from "../ThemeToggle";
-import { Button } from "@/components/ui/New-Button";
+import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 export default function Navbar() {
