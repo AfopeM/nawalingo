@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/New-Button";
 import Link from "next/link";
 
 const schema = z.object({

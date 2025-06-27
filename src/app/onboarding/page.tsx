@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/New-Button";
 import RoleSelection, { Role } from "@/components/auth/RoleSelection";
 
 export default function OnboardingPage() {
