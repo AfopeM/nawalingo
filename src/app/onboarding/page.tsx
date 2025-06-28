@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+// import { Button } from "@/components/ui/Button";
 import RoleSelection, { Role } from "@/components/auth/RoleSelection";
 
 export default function OnboardingPage() {
@@ -93,9 +93,9 @@ export default function OnboardingPage() {
           onChange={setSelectedRoles}
         />
         {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full">
+        <button type="submit" disabled={loading} className="w-full">
           {loading ? "Saving..." : "Continue"}
-        </Button>
+        </button>
       </form>
     </div>
   );

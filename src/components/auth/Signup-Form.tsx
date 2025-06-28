@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/Button";
+// import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -88,9 +88,9 @@ export default function SignupForm() {
           Check your email for a confirmation link.
         </p>
       )}
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Signing up..." : "Sign Up"}
-      </Button>
+      </button>
       <p className="capitalize">
         already have an account? <Link href="/signin">Login</Link>
       </p>
