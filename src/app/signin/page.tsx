@@ -4,7 +4,7 @@ import SigninForm from "@/components/auth/Signin-Form";
 
 export default function SigninPage() {
   return (
-    <div className="container mx-auto h-screen">
+    <div className="container mx-auto h-screen px-8 py-4">
       <nav className="flex h-[5%] items-center justify-between">
         <Link href="/">Back</Link>
         <ThemeToggle />

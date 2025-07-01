@@ -15,14 +15,14 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid()) @db.Uuid
   email      String
   full_name  String?
   timezone   String?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  roles      UserRole[]
+  roles UserRole[]
 }
 
 enum Role {
@@ -37,11 +37,11 @@ enum RoleStatus {
 }
 
 model UserRole {
-  id         String     @id @default(uuid())
-  user_id    String
+  id         String     @id @default(uuid()) @db.Uuid
+  user_id    String     @db.Uuid
   role       Role
   status     RoleStatus @default(pending)
   created_at DateTime   @default(now())
 
-  user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

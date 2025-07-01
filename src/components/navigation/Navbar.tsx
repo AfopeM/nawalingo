@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import ThemeToggle from "../ThemeToggle";
-// import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 export default function Navbar() {
@@ -17,22 +17,19 @@ export default function Navbar() {
         {!loading && user ? (
           <>
             <Link href="/dashboard">
-              {/* <Button variant="outline">Dashboard</Button> */}
-              <button>Dashboard</button>
+              <Button variant="outline">Dashboard</Button>
             </Link>
-            {/* <Button onClick={signOut}>Logout</Button> */}
-            <button onClick={signOut}>Logout</button>
+            <Button onClick={signOut}>Logout</Button>
+
             <ThemeToggle />
           </>
         ) : (
           <>
             <Link href="/signin">
-              {/* <Button>Login</Button> */}
-              <button>Login</button>
+              <Button>Login</Button>
             </Link>
             <Link href="/signup">
-              {/* <Button variant="outline">Signup</Button> */}
-              <button>Signup</button>
+              <Button variant="outline">Signup</Button>
             </Link>
             <ThemeToggle />
           </>

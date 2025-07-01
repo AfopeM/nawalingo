@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/lib/supabase";
-// import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 const schema = z.object({
@@ -78,9 +78,9 @@ export default function SigninForm() {
         )}
       </div>
       {formError && <p className="text-sm text-red-500">{formError}</p>}
-      <button type="submit" disabled={isSubmitting} className="w-full">
+      <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Signing in..." : "Sign In"}
-      </button>
+      </Button>
       <p className="capitalize">
         Don&apos;t have an account? <Link href="/signup">Signup</Link>
       </p>

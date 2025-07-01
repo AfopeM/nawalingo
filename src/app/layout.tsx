@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/providers/auth/auth-provider";
 import { ThemeProvider } from "@/providers/theme/theme-provider";
 
@@ -13,7 +14,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Nawalingo",
   description:
-    "Nawalingo is a pay-per-lesson language learning platform offering 1-on-1 live video sessions with qualified tutors.",
+    "Nawalingo is a pay-per-lesson language learning platform offering live video sessions with qualified tutors.",
 };
 
 export default function RootLayout({
@@ -25,7 +26,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} font-pop antialiased`}>
         <AuthProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
