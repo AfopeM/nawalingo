@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ThemeToggle from "@/components/ThemeToggle";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import SignupForm from "@/components/auth/Signup-Form";
 
 export default function SignupPage() {

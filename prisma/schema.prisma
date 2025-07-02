@@ -22,7 +22,8 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  roles UserRole[]
+  roles              UserRole[]
+  studentPreferences StudentPreferences?
 }
 
 enum Role {
@@ -42,6 +43,19 @@ model UserRole {
   role       Role
   status     RoleStatus @default(pending)
   created_at DateTime   @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model StudentPreferences {
+  id                     String   @id @default(uuid()) @db.Uuid
+  user_id                String   @unique @db.Uuid
+  target_languages       String[]
+  preferred_availability Json
+  timezone               String
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  onboarding_completed   Boolean  @default(false)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

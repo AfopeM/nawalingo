@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { AuthProvider } from "@/providers/auth/auth-provider";
 import { ThemeProvider } from "@/providers/theme/theme-provider";
 

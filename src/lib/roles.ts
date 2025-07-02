@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase } from "./supabase/client";
 
 export function getActiveRole(): string | null {
   if (typeof window === "undefined") return null;

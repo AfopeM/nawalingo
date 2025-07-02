@@ -1,12 +1,12 @@
 "use client";
+import { z } from "zod";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
+import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -16,6 +16,10 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
+
+interface AuthError {
+  message: string;
+}
 
 export default function SignupForm() {
   const {
@@ -27,23 +31,30 @@ export default function SignupForm() {
   });
 
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
     setFormError(null);
-    setSuccess(false);
-    const { error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    });
-    if (error) {
-      setFormError(error.message);
-    } else {
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/onboarding");
-      }, 1500);
+
+    try {
+      const { data: authData, error: signUpError } = await supabase.auth.signUp(
+        {
+          email: data.email,
+          password: data.password,
+        },
+      );
+
+      if (signUpError) throw signUpError;
+      if (!authData.user) throw new Error("No user data returned");
+
+      // Redirect to onboarding
+      router.push("/onboarding");
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "message" in error) {
+        setFormError((error as AuthError).message);
+      } else {
+        setFormError("An unexpected error occurred");
+      }
     }
   };
 
@@ -83,16 +94,11 @@ export default function SignupForm() {
         )}
       </div>
       {formError && <p className="text-sm text-red-500">{formError}</p>}
-      {success && (
-        <p className="text-sm text-green-600">
-          Check your email for a confirmation link.
-        </p>
-      )}
       <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Signing up..." : "Sign Up"}
       </Button>
-      <p className="capitalize">
-        already have an account? <Link href="/signin">Login</Link>
+      <p className="text-sm">
+        Already have an account? <Link href="/signin">Sign in</Link>
       </p>
     </form>
   );

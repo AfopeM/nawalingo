@@ -1,61 +1,99 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/providers/auth/auth-provider";
+
+interface OnboardingData {
+  onboardingCompleted: boolean;
+  error?: string;
+}
 
 export default function DashboardPage() {
   const [roles, setRoles] = useState<string[]>([]);
   const [activeRole, setActiveRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(
+    null,
+  );
+  const router = useRouter();
+  const { session } = useAuth();
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      setLoading(true); // Tell the screen we're starting to load.
+    const checkOnboardingAndFetchRoles = async () => {
+      setLoading(true);
 
-      // 1. Get the current user's general info from Supabase.
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      // If no user is logged in, clear roles and stop loading.
-      if (!user) {
-        setRoles([]);
-        setLoading(false);
+      if (!session) {
+        router.replace("/signin");
         return;
       }
 
-      // 2. If a user is logged in, ask Supabase for their specific "approved" roles.
-      const { data, error } = await supabase
-        .from("UserRole") // Look in the "UserRole" table
-        .select("role") // Only get the "role" column
-        .eq("user_id", user.id) // For this specific user's ID
-        .eq("status", "approved"); // And only roles that are "approved"
+      try {
+        // Check if onboarding is completed via API
+        const onboardingRes = await fetch("/api/user/onboarding", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
 
-      // 3. Process the roles we got back.
-      if (!error && data) {
-        // If there were no errors and we got data
-        const userRoles = data.map((r: { role: string }) => r.role); // Extract just the role names (e.g., ["student", "tutor"])
-        setRoles(userRoles); // Put these roles on our notepad.
-
-        // 4. Decide which role should be "active" right now.
-        const stored =
-          typeof window !== "undefined"
-            ? localStorage.getItem("activeRole") // Check if the user previously saved an active role in their browser's memory.
-            : null;
-
-        if (stored && userRoles.includes(stored)) {
-          setActiveRole(stored); // If a saved role exists AND it's one of the user's actual roles, use it.
-        } else if (userRoles.length > 0) {
-          setActiveRole(userRoles[0]); // Otherwise, if the user has any roles, make the very first one active by default.
-          if (typeof window !== "undefined")
-            localStorage.setItem("activeRole", userRoles[0]); // And save this default active role for next time.
+        if (!onboardingRes.ok) {
+          const errorData = await onboardingRes.json();
+          console.error("Error checking onboarding status:", errorData.error);
+          setOnboardingData({
+            onboardingCompleted: false,
+            error: errorData.error,
+          });
+          setLoading(false);
+          return;
         }
+
+        const onboardingData = await onboardingRes.json();
+        setOnboardingData(onboardingData);
+
+        if (!onboardingData.onboardingCompleted) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch roles if onboarding is completed
+        const { data, error } = await supabase
+          .from("UserRole")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .eq("status", "approved");
+
+        if (!error && data) {
+          const userRoles = data.map((r: { role: string }) => r.role);
+          setRoles(userRoles);
+
+          const stored =
+            typeof window !== "undefined"
+              ? localStorage.getItem("activeRole")
+              : null;
+
+          if (stored && userRoles.includes(stored)) {
+            setActiveRole(stored);
+          } else if (userRoles.length > 0) {
+            setActiveRole(userRoles[0]);
+            if (typeof window !== "undefined")
+              localStorage.setItem("activeRole", userRoles[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setOnboardingData({
+          onboardingCompleted: false,
+          error: "An unexpected error occurred",
+        });
       }
-      setLoading(false); // Done loading, update the screen.
+
+      setLoading(false);
     };
 
-    fetchRoles(); // Run this whole process when the page first loads.
-  }, []); // The empty square brackets mean "run this only once when the component appears."
+    checkOnboardingAndFetchRoles();
+  }, [router, session]);
 
   const handleSwitch = (role: string) => {
     setActiveRole(role);
@@ -70,28 +108,56 @@ export default function DashboardPage() {
     );
   }
 
+  // Show blurred state if onboarding is not completed
+  if (!onboardingData?.onboardingCompleted) {
+    return (
+      <div className="mx-auto mt-16 max-w-4xl">
+        <h1 className="mb-8 text-3xl font-bold">Welcome to Dashboard</h1>
+        <div className="relative">
+          {/* Blurred content */}
+          <div className="pointer-events-none blur-sm">
+            <div className="rounded border bg-white p-8 shadow">
+              <div className="h-48 animate-pulse rounded bg-gray-200"></div>
+              <div className="mt-4 h-4 w-2/3 animate-pulse rounded bg-gray-200"></div>
+              <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-gray-200"></div>
+            </div>
+          </div>
+          {/* Overlay message */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
+            <p className="mb-4 text-lg text-gray-700">
+              Please complete your onboarding to access the dashboard
+            </p>
+            <Button
+              onClick={() => router.push("/onboarding")}
+              className="rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
+            >
+              Complete Onboarding
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto mt-16 max-w-md rounded border bg-white p-8 shadow">
       <h1 className="mb-4 text-2xl font-bold">Dashboard</h1>
-      {roles.length > 1 && ( // Only show the role switch if the user has more than one role
+      {roles.length > 1 && (
         <div className="mb-6">
           <label className="mb-2 block font-semibold">Switch Role:</label>
           <div className="flex gap-2">
-            {roles.map(
-              (
-                role, // For each role the user has...
-              ) => (
-                <button
-                  key={role}
-                  className={`rounded border px-4 py-2 ${activeRole === role ? "bg-blue-600 text-white" : "bg-gray-100"}`} // Make the active role's button look different
-                  onClick={() => handleSwitch(role)} // When clicked, call the switch function
-                  disabled={activeRole === role} // Disable the button for the role that's already active
-                >
-                  {role.charAt(0).toUpperCase() + role.slice(1)}{" "}
-                  {/* Show role name, like "Student" instead of "student" */}
-                </button>
-              ),
-            )}
+            {roles.map((role) => (
+              <button
+                key={role}
+                className={`rounded border px-4 py-2 ${
+                  activeRole === role ? "bg-blue-600 text-white" : "bg-gray-100"
+                }`}
+                onClick={() => handleSwitch(role)}
+                disabled={activeRole === role}
+              >
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
       )}

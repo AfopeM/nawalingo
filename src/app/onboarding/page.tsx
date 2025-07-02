@@ -1,38 +1,154 @@
 "use client";
-import { supabase } from "@/lib/supabase";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import RoleSelection, { Role } from "@/components/auth/RoleSelection";
+import LanguageSelection from "@/components/onboarding/LanguageSelection";
+import AvailabilitySelection from "@/components/onboarding/AvailabilitySelection";
+import TimezoneSelection from "@/components/onboarding/TimezoneSelection";
+import { useAuth } from "@/providers/auth/auth-provider";
+
+interface TimeSlot {
+  day: string;
+  start: string;
+  end: string;
+}
+
+type OnboardingStep = "name" | "languages" | "availability" | "timezone";
+
+interface AuthError {
+  message: string;
+}
 
 export default function OnboardingPage() {
-  const [selectedRoles, setSelectedRoles] = useState<Role[]>([]);
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("name");
+  const [fullName, setFullName] = useState("");
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedTimeSlots, setSelectedTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedTimezone, setSelectedTimezone] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const router = useRouter();
+  const { session } = useAuth();
 
+  // Check if user is logged in and onboarding status
   useEffect(() => {
-    const checkRoles = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+    const checkOnboarding = async () => {
+      // If no session, redirect to signin
+      if (!session) {
         router.replace("/signin");
         return;
       }
-      const { data: roles, error } = await supabase
-        .from("UserRole")
-        .select("role")
-        .eq("user_id", user.id);
-      if (!error && roles && roles.length > 0) {
-        router.replace("/dashboard");
-        return;
+
+      try {
+        // Check onboarding status through API
+        const response = await fetch("/api/user/onboarding", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        // If onboarding is completed, redirect to dashboard
+        if (data.onboardingCompleted) {
+          router.replace("/dashboard");
+          return;
+        }
+
+        // Otherwise, show onboarding form
+        setChecking(false);
+      } catch (error) {
+        console.error("Error checking onboarding:", error);
+        setError("Failed to check onboarding status");
+        setChecking(false);
       }
-      setChecking(false);
     };
-    checkRoles();
-  }, [router]);
+
+    checkOnboarding();
+  }, [router, session]);
+
+  const handleNext = () => {
+    setError(null);
+    switch (currentStep) {
+      case "name":
+        if (!fullName.trim()) {
+          setError("Please enter your full name");
+          return;
+        }
+        setCurrentStep("languages");
+        break;
+      case "languages":
+        if (selectedLanguages.length === 0) {
+          setError("Please select at least one language to learn.");
+          return;
+        }
+        setCurrentStep("availability");
+        break;
+      case "availability":
+        if (selectedTimeSlots.length === 0) {
+          setError("Please select at least one time slot.");
+          return;
+        }
+        setCurrentStep("timezone");
+        break;
+      case "timezone":
+        handleSubmit();
+        break;
+    }
+  };
+
+  const handleSubmit = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (!session) {
+        throw new Error("No user found");
+      }
+
+      // Convert TimeSlot array to a proper JSON object
+      const availabilityJson = {
+        slots: selectedTimeSlots.map((slot) => ({
+          day: slot.day,
+          start: slot.start,
+          end: slot.end,
+        })),
+      };
+
+      // Submit onboarding data through API
+      const response = await fetch("/api/user/onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          fullName,
+          selectedLanguages,
+          availabilityJson,
+          selectedTimezone,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to submit onboarding");
+      }
+
+      // Redirect to dashboard after successful submission
+      router.push("/dashboard");
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "message" in error) {
+        setError((error as AuthError).message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (checking) {
     return (
@@ -42,70 +158,120 @@ export default function OnboardingPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    if (selectedRoles.length === 0) {
-      setError("Please select at least one role.");
-      return;
-    }
-    setLoading(true);
-    // Get current user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-    if (userError || !user) {
-      setError("Could not get user info.");
-      setLoading(false);
-      return;
-    }
-    // Save roles to your backend (this is a placeholder, actual logic may vary)
-    // Example: call a Supabase function or insert into a roles table
-    // Here, we'll assume a 'user_roles' table with user_id and role columns
-    try {
-      // Remove existing roles (optional, for idempotency)
-      await supabase.from("UserRole").delete().eq("user_id", user.id);
-      // Insert new roles
-      const inserts = selectedRoles.map((role) => ({ user_id: user.id, role }));
-      const { error: insertError } = await supabase
-        .from("UserRole")
-        .insert(inserts);
-      if (insertError) throw insertError;
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      let message = "Failed to save roles.";
-      if (isErrorWithMessage(err)) {
-        message = err.message;
-      }
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="mx-auto mt-16 max-w-md rounded border bg-white p-8 shadow">
-      <h1 className="mb-4 text-2xl font-bold">Welcome! Select your role(s)</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <RoleSelection
-          selectedRoles={selectedRoles}
-          onChange={setSelectedRoles}
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Saving..." : "Continue"}
+      <div className="mb-8">
+        <div className="flex justify-between">
+          {["name", "languages", "availability", "timezone"].map(
+            (step, index) => (
+              <div
+                key={step}
+                className={`h-2 w-full ${index > 0 ? "ml-2" : ""} rounded ${
+                  getStepIndex(currentStep) >= index
+                    ? "bg-primary"
+                    : "bg-gray-200"
+                }`}
+              />
+            ),
+          )}
+        </div>
+      </div>
+
+      {currentStep === "name" && (
+        <>
+          <h1 className="mb-4 text-2xl font-bold">What&apos;s your name?</h1>
+          <div className="space-y-4">
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Enter your full name"
+              className="w-full rounded border px-3 py-2"
+              autoComplete="name"
+            />
+          </div>
+        </>
+      )}
+
+      {currentStep === "languages" && (
+        <>
+          <h1 className="mb-4 text-2xl font-bold">
+            What languages do you want to learn?
+          </h1>
+          <LanguageSelection
+            selectedLanguages={selectedLanguages}
+            onChange={setSelectedLanguages}
+          />
+        </>
+      )}
+
+      {currentStep === "availability" && (
+        <>
+          <h1 className="mb-4 text-2xl font-bold">
+            When are you available for lessons?
+          </h1>
+          <AvailabilitySelection
+            selectedSlots={selectedTimeSlots}
+            onChange={setSelectedTimeSlots}
+          />
+        </>
+      )}
+
+      {currentStep === "timezone" && (
+        <>
+          <h1 className="mb-4 text-2xl font-bold">
+            What&apos;s your timezone?
+          </h1>
+          <TimezoneSelection
+            selectedTimezone={selectedTimezone}
+            onChange={setSelectedTimezone}
+          />
+        </>
+      )}
+
+      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+
+      <div className="mt-8 flex justify-between">
+        {currentStep !== "name" && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              setError(null);
+              const steps: OnboardingStep[] = [
+                "name",
+                "languages",
+                "availability",
+                "timezone",
+              ];
+              const currentIndex = steps.indexOf(currentStep);
+              setCurrentStep(steps[currentIndex - 1]);
+            }}
+          >
+            Back
+          </Button>
+        )}
+        <Button
+          className={currentStep === "name" ? "w-full" : ""}
+          onClick={handleNext}
+          disabled={loading}
+        >
+          {loading
+            ? "Saving..."
+            : currentStep === "timezone"
+              ? "Complete"
+              : "Continue"}
         </Button>
-      </form>
+      </div>
     </div>
   );
 }
 
-function isErrorWithMessage(err: unknown): err is { message: string } {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "message" in err &&
-    typeof (err as { message: unknown }).message === "string"
-  );
+function getStepIndex(step: OnboardingStep): number {
+  const steps: OnboardingStep[] = [
+    "name",
+    "languages",
+    "availability",
+    "timezone",
+  ];
+  return steps.indexOf(step);
 }
