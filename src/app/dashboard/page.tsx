@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getUserRoles } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
+import Link from "next/link";
 
 interface OnboardingData {
   onboardingCompleted: boolean;
@@ -162,6 +163,9 @@ export default function DashboardPage() {
         </span>
       </p>
       <p>Welcome to your dashboard! More features coming soon.</p>
+      <Link href="/profile">
+        <Button>Profile</Button>
+      </Link>
     </div>
   );
 }

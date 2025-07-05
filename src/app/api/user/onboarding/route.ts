@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { Prisma } from "@prisma/client";
 
 // Get onboarding status
 export async function GET(request: Request) {
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
       body;
 
     // Update user profile and preferences in a transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update user profile
       await tx.user.update({
         where: { id: user.id },
