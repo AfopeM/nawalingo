@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { getUserRoles } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
 
@@ -57,29 +57,21 @@ export default function DashboardPage() {
           return;
         }
 
-        // Fetch roles if onboarding is completed
-        const { data, error } = await supabase
-          .from("UserRole")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("status", "approved");
+        // Fetch roles if onboarding is completed via backend API
+        const userRoles = await getUserRoles();
+        setRoles(userRoles);
 
-        if (!error && data) {
-          const userRoles = data.map((r: { role: string }) => r.role);
-          setRoles(userRoles);
+        const stored =
+          typeof window !== "undefined"
+            ? localStorage.getItem("activeRole")
+            : null;
 
-          const stored =
-            typeof window !== "undefined"
-              ? localStorage.getItem("activeRole")
-              : null;
-
-          if (stored && userRoles.includes(stored)) {
-            setActiveRole(stored);
-          } else if (userRoles.length > 0) {
-            setActiveRole(userRoles[0]);
-            if (typeof window !== "undefined")
-              localStorage.setItem("activeRole", userRoles[0]);
-          }
+        if (stored && userRoles.includes(stored)) {
+          setActiveRole(stored);
+        } else if (userRoles.length > 0) {
+          setActiveRole(userRoles[0]);
+          if (typeof window !== "undefined")
+            localStorage.setItem("activeRole", userRoles[0]);
         }
       } catch (error) {
         console.error("Error:", error);

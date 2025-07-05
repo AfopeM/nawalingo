@@ -11,17 +11,28 @@ export function setActiveRole(role: string) {
 }
 
 export async function getUserRoles(): Promise<string[]> {
+  // First get the current session so we can forward the access token
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return [];
-  const { data, error } = await supabase
-    .from("UserRole")
-    .select("role")
-    .eq("user_id", user.id)
-    .eq("status", "approved");
-  if (error || !data) return [];
-  return data.map((r: { role: string }) => r.role);
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const token = session?.access_token;
+  if (!token) return [];
+
+  try {
+    const res = await fetch("/api/user/roles", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) return [];
+
+    const json = (await res.json()) as { roles?: string[] };
+    return json.roles ?? [];
+  } catch {
+    return [];
+  }
 }
 
 export async function hasRole(role: string): Promise<boolean> {
