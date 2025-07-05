@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { Separator } from "@/components/ui/eparator";
 import LanguageSelection from "@/components/onboarding/LanguageSelection";
 import AvailabilitySelection from "@/components/onboarding/AvailabilitySelection";
 import TimezoneSelection from "@/components/onboarding/TimezoneSelection";
-import { prisma } from "@/lib/prisma";
-import { PrismaClient } from "@prisma/client";
+import { useAuth } from "@/providers/auth/auth-provider";
 
 interface TimeSlot {
   day: string;
@@ -15,18 +14,9 @@ interface TimeSlot {
   end: string;
 }
 
-interface PreferredAvailability {
-  slots: TimeSlot[];
-}
-
 interface ProfileFormProps {
   onSuccess?: () => void;
 }
-
-type TransactionClient = Omit<
-  PrismaClient,
-  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
->;
 
 export default function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [fullName, setFullName] = useState("");
@@ -36,39 +26,48 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const { session } = useAuth();
+
+  // Keep originals for cancel functionality
+  const [initialState, setInitialState] = useState({
+    fullName: "",
+    selectedLanguages: [] as string[],
+    selectedTimeSlots: [] as TimeSlot[],
+    selectedTimezone: "",
+  });
 
   useEffect(() => {
     const loadUserProfile = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return;
+      if (!session) {
+        setInitialLoading(false);
+        return;
+      }
 
-        // Fetch user profile and preferences
-        const userProfile = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: {
-            studentPreferences: true,
+      try {
+        const response = await fetch("/api/user/profile", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
           },
         });
 
-        if (userProfile) {
-          setFullName(userProfile.full_name || "");
-          setSelectedTimezone(userProfile.timezone || "");
-
-          if (userProfile.studentPreferences) {
-            setSelectedLanguages(
-              userProfile.studentPreferences.target_languages || [],
-            );
-            setSelectedTimeSlots(
-              (
-                userProfile.studentPreferences
-                  .preferred_availability as unknown as PreferredAvailability
-              )?.slots || [],
-            );
-          }
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to load profile");
         }
+
+        const data = await response.json();
+
+        setFullName(data.fullName || "");
+        setSelectedTimezone(data.selectedTimezone || "");
+        setSelectedLanguages(data.selectedLanguages || []);
+        setSelectedTimeSlots(data.selectedTimeSlots || []);
+
+        setInitialState({
+          fullName: data.fullName || "",
+          selectedLanguages: data.selectedLanguages || [],
+          selectedTimeSlots: data.selectedTimeSlots || [],
+          selectedTimezone: data.selectedTimezone || "",
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -81,17 +80,16 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
     };
 
     loadUserProfile();
-  }, []);
+  }, [session]);
 
   const handleSubmit = async () => {
     setError(null);
     setLoading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!session) {
+        throw new Error("No user session found");
+      }
 
       // Convert TimeSlot array to a proper JSON object
       const availabilityJson = {
@@ -102,34 +100,24 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
         })),
       };
 
-      // Update user profile and preferences in a transaction
-      await prisma.$transaction(async (tx: TransactionClient) => {
-        // Update user profile
-        await tx.user.update({
-          where: { id: user.id },
-          data: {
-            full_name: fullName,
-            timezone: selectedTimezone,
-          },
-        });
-
-        // Upsert student preferences
-        await tx.studentPreferences.upsert({
-          where: { user_id: user.id },
-          create: {
-            user_id: user.id,
-            target_languages: selectedLanguages,
-            preferred_availability: availabilityJson,
-            timezone: selectedTimezone,
-            onboarding_completed: true,
-          },
-          update: {
-            target_languages: selectedLanguages,
-            preferred_availability: availabilityJson,
-            timezone: selectedTimezone,
-          },
-        });
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          fullName,
+          selectedLanguages,
+          availabilityJson,
+          selectedTimezone,
+        }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update profile");
+      }
 
       if (onSuccess) {
         onSuccess();
@@ -141,6 +129,14 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    // Reset state to initial values
+    setFullName(initialState.fullName);
+    setSelectedLanguages(initialState.selectedLanguages);
+    setSelectedTimeSlots(initialState.selectedTimeSlots);
+    setSelectedTimezone(initialState.selectedTimezone);
   };
 
   if (initialLoading) {
@@ -167,6 +163,8 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
         </div>
       </div>
 
+      <Separator className="my-6" />
+
       <div className="space-y-4">
         <h2 className="text-xl font-bold">Languages</h2>
         <LanguageSelection
@@ -175,6 +173,8 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
         />
       </div>
 
+      <Separator className="my-6" />
+
       <div className="space-y-4">
         <h2 className="text-xl font-bold">Availability</h2>
         <AvailabilitySelection
@@ -182,6 +182,8 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
           onChange={setSelectedTimeSlots}
         />
       </div>
+
+      <Separator className="my-6" />
 
       <div className="space-y-4">
         <h2 className="text-xl font-bold">Timezone</h2>
@@ -193,9 +195,14 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <Button onClick={handleSubmit} disabled={loading} className="w-full">
-        {loading ? "Saving..." : "Save Changes"}
-      </Button>
+      <div className="flex justify-end gap-3">
+        <Button variant="outline" onClick={handleCancel} disabled={loading}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
+        </Button>
+      </div>
     </div>
   );
 }
