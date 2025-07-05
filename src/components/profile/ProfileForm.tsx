@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
-import { Separator } from "@/components/ui/eparator";
+import { Separator } from "@/components/ui/Separator";
 import LanguageSelection from "@/components/onboarding/LanguageSelection";
 import AvailabilitySelection from "@/components/onboarding/AvailabilitySelection";
 import TimezoneSelection from "@/components/onboarding/TimezoneSelection";
