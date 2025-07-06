@@ -50,26 +50,49 @@ export async function GET(request: Request) {
 
     const { user } = authResult;
 
-    const userProfile = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        studentPreferences: true,
-      },
-    });
+    const userRecord = await prisma.user.findUnique({ where: { id: user.id } });
 
-    if (!userProfile) {
+    if (!userRecord) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const preferences = userProfile.studentPreferences;
-    // Build response payload
+    const studentProfile = await prisma.studentProfile.findUnique({
+      where: { user_id: user.id },
+    });
+
+    const availabilities = await prisma.availability.findMany({
+      where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+    });
+
+    const dayMap = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    const formatTime = (mins: number) => {
+      const h = Math.floor(mins / 60)
+        .toString()
+        .padStart(2, "0");
+      const m = (mins % 60).toString().padStart(2, "0");
+      return `${h}:${m}`;
+    };
+
+    const selectedTimeSlots = availabilities.map((a) => ({
+      day: dayMap[a.day_of_week],
+      start: formatTime(a.start_minute),
+      end: formatTime(a.end_minute),
+    }));
+
     const responsePayload = {
-      fullName: userProfile.full_name || "",
-      selectedTimezone: userProfile.timezone || "",
-      selectedLanguages: preferences?.target_languages ?? [],
-      selectedTimeSlots:
-        (preferences?.preferred_availability as unknown as { slots: unknown })
-          ?.slots ?? [],
+      fullName: userRecord.username || "",
+      selectedTimezone: userRecord.timezone || "",
+      selectedLanguages: studentProfile?.target_languages ?? [],
+      selectedTimeSlots,
     };
 
     return NextResponse.json(responsePayload);
@@ -95,37 +118,68 @@ export async function PUT(request: Request) {
     const { user } = authResult;
 
     const body = await request.json();
-    const {
-      fullName,
-      selectedLanguages,
-      availabilityJson, // expected structure like { slots: [...] }
-      selectedTimezone,
-    } = body;
+    const { fullName, selectedLanguages, selectedTimeSlots, selectedTimezone } =
+      body;
 
     await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.user.update({
         where: { id: user.id },
         data: {
-          full_name: fullName,
+          username: fullName,
           timezone: selectedTimezone,
         },
       });
 
-      await tx.studentPreferences.upsert({
+      await tx.studentProfile.upsert({
         where: { user_id: user.id },
         create: {
           user_id: user.id,
           target_languages: selectedLanguages,
-          preferred_availability: availabilityJson,
-          timezone: selectedTimezone,
           onboarding_completed: true,
         },
         update: {
           target_languages: selectedLanguages,
-          preferred_availability: availabilityJson,
-          timezone: selectedTimezone,
         },
       });
+
+      // Replace existing availability entries for the student
+      await tx.availability.deleteMany({
+        where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+      });
+
+      const dayMap: Record<string, number> = {
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6,
+      };
+
+      const toMinutes = (t: string) => {
+        const [h, m] = t.split(":").map(Number);
+        return h * 60 + m;
+      };
+
+      const availabilityData = (
+        selectedTimeSlots as {
+          day: string;
+          start: string;
+          end: string;
+        }[]
+      ).map((slot) => ({
+        user_id: user.id,
+        type: "STUDENT_PREFERRED" as const,
+        day_of_week: dayMap[slot.day],
+        start_minute: toMinutes(slot.start),
+        end_minute: toMinutes(slot.end),
+        timezone: selectedTimezone,
+      }));
+
+      if (availabilityData.length > 0) {
+        await tx.availability.createMany({ data: availabilityData });
+      }
     });
 
     return NextResponse.json({ success: true });

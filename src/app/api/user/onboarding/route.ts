@@ -37,12 +37,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const preferences = await prisma.studentPreferences.findUnique({
+    const studentProfile = await prisma.studentProfile.findUnique({
       where: { user_id: user.id },
     });
 
     return NextResponse.json({
-      onboardingCompleted: !!preferences?.onboarding_completed,
+      onboardingCompleted: !!studentProfile?.onboarding_completed,
     });
   } catch (error) {
     console.error("Error checking onboarding status:", error);
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
 
     // Get request body
     const body = await request.json();
-    const { fullName, selectedLanguages, availabilityJson, selectedTimezone } =
+    const { fullName, selectedLanguages, selectedTimeSlots, selectedTimezone } =
       body;
 
     // Update user profile and preferences in a transaction
@@ -98,28 +98,63 @@ export async function POST(request: Request) {
       await tx.user.update({
         where: { id: user.id },
         data: {
-          full_name: fullName,
+          username: fullName,
           timezone: selectedTimezone,
         },
       });
 
-      // Upsert student preferences
-      await tx.studentPreferences.upsert({
+      // Upsert student profile
+      await tx.studentProfile.upsert({
         where: { user_id: user.id },
         create: {
           user_id: user.id,
           target_languages: selectedLanguages,
-          preferred_availability: availabilityJson,
-          timezone: selectedTimezone,
           onboarding_completed: true,
         },
         update: {
           target_languages: selectedLanguages,
-          preferred_availability: availabilityJson,
-          timezone: selectedTimezone,
           onboarding_completed: true,
         },
       });
+
+      // Replace existing student preferred availability slots
+      await tx.availability.deleteMany({
+        where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+      });
+
+      const dayMap: Record<string, number> = {
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6,
+      };
+
+      const toMinutes = (t: string) => {
+        const [h, m] = t.split(":").map(Number);
+        return h * 60 + m;
+      };
+
+      const availabilityData = (
+        selectedTimeSlots as {
+          day: string;
+          start: string;
+          end: string;
+        }[]
+      ).map((slot) => ({
+        user_id: user.id,
+        type: "STUDENT_PREFERRED" as const,
+        day_of_week: dayMap[slot.day],
+        start_minute: toMinutes(slot.start),
+        end_minute: toMinutes(slot.end),
+        timezone: selectedTimezone,
+      }));
+
+      if (availabilityData.length > 0) {
+        await tx.availability.createMany({ data: availabilityData });
+      }
     });
 
     return NextResponse.json({ success: true });

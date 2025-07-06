@@ -13,18 +13,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Core User model
 model User {
-  id         String   @id @default(uuid()) @db.Uuid
-  email      String
-  full_name  String?
-  timezone   String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id                String   @id @default(uuid()) @db.Uuid
+  email             String   @unique
+  username          String?
+  timezone          String? // IANA timezone string
+  profile_image_url String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-  roles              UserRole[]
-  studentPreferences StudentPreferences?
+  roles          UserRole[]
+  studentProfile StudentProfile?
+  tutorProfile   TutorProfile?
+  availability   Availability[]
+  tutorRatings   TutorRating[]   @relation("TutorRatings")
+  studentRatings TutorRating[]   @relation("StudentRatings")
 }
 
+// Role management
 enum Role {
   student
   tutor
@@ -44,17 +51,74 @@ model UserRole {
   created_at DateTime   @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role])
 }
 
-model StudentPreferences {
-  id                     String   @id @default(uuid()) @db.Uuid
-  user_id                String   @unique @db.Uuid
-  target_languages       String[]
-  preferred_availability Json
-  timezone               String
-  created_at             DateTime @default(now())
-  updated_at             DateTime @updatedAt
-  onboarding_completed   Boolean  @default(false)
+model StudentProfile {
+  id                   String   @id @default(uuid()) @db.Uuid
+  user_id              String   @unique @db.Uuid
+  target_languages     String[]
+  onboarding_completed Boolean  @default(false)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// Tutor profile information
+model TutorProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  user_id             String   @unique @db.Uuid
+  bio                 String?
+  languages_taught    Json // [{"language": "Spanish", "proficiency": "native"}]
+  teaching_experience String?
+  country             String?
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// Availability type enum
+enum AvailabilityType {
+  STUDENT_PREFERRED
+  TUTOR_AVAILABLE
+}
+
+// Unified availability for both students and tutors
+model Availability {
+  id           String           @id @default(uuid()) @db.Uuid
+  user_id      String           @db.Uuid
+  type         AvailabilityType
+  day_of_week  Int // 0-6 (Sunday-Saturday)
+  start_minute Int // Minutes since midnight (540 = 9:00 AM)
+  end_minute   Int // Minutes since midnight (660 = 11:00 AM)
+  timezone     String // IANA timezone string
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, day_of_week])
+  @@index([day_of_week, start_minute, end_minute])
+  @@index([type, day_of_week, start_minute, end_minute])
+}
+
+// Tutor ratings and feedback
+model TutorRating {
+  id         String   @id @default(uuid()) @db.Uuid
+  tutor_id   String   @db.Uuid
+  student_id String   @db.Uuid
+  rating     Int // 1-5
+  feedback   String?
+  session_id String?  @db.Uuid // For future reference
+  created_at DateTime @default(now())
+
+  tutor   User @relation("TutorRatings", fields: [tutor_id], references: [id], onDelete: Cascade)
+  student User @relation("StudentRatings", fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@index([tutor_id])
+  @@index([student_id])
 }

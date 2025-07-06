@@ -108,15 +108,6 @@ export default function OnboardingPage() {
         throw new Error("No user found");
       }
 
-      // Convert TimeSlot array to a proper JSON object
-      const availabilityJson = {
-        slots: selectedTimeSlots.map((slot) => ({
-          day: slot.day,
-          start: slot.start,
-          end: slot.end,
-        })),
-      };
-
       // Submit onboarding data through API
       const response = await fetch("/api/user/onboarding", {
         method: "POST",
@@ -127,7 +118,7 @@ export default function OnboardingPage() {
         body: JSON.stringify({
           fullName,
           selectedLanguages,
-          availabilityJson,
+          selectedTimeSlots,
           selectedTimezone,
         }),
       });

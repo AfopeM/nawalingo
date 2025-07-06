@@ -91,15 +91,6 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
         throw new Error("No user session found");
       }
 
-      // Convert TimeSlot array to a proper JSON object
-      const availabilityJson = {
-        slots: selectedTimeSlots.map((slot) => ({
-          day: slot.day,
-          start: slot.start,
-          end: slot.end,
-        })),
-      };
-
       const response = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
@@ -109,7 +100,7 @@ export default function ProfileForm({ onSuccess }: ProfileFormProps) {
         body: JSON.stringify({
           fullName,
           selectedLanguages,
-          availabilityJson,
+          selectedTimeSlots,
           selectedTimezone,
         }),
       });
