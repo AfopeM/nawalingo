@@ -24,6 +24,9 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("name");
   const [fullName, setFullName] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [languageDetails, setLanguageDetails] = useState<
+    { language: string; proficiency: string }[]
+  >([]);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedTimezone, setSelectedTimezone] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +87,19 @@ export default function OnboardingPage() {
           setError("Please select at least one language to learn.");
           return;
         }
+
+        // Synchronize languageDetails with the current selections
+        const updated = selectedLanguages.map((lang) => {
+          const existing = languageDetails.find((d) => d.language === lang);
+          return existing ?? { language: lang, proficiency: "" };
+        });
+        setLanguageDetails(updated);
+
+        if (updated.some((d) => !d.proficiency)) {
+          setError("Please set proficiency for each selected language.");
+          return;
+        }
+
         setCurrentStep("availability");
         break;
       case "availability":
@@ -117,7 +133,7 @@ export default function OnboardingPage() {
         },
         body: JSON.stringify({
           fullName,
-          selectedLanguages,
+          selectedLanguages: languageDetails,
           selectedTimeSlots,
           selectedTimezone,
         }),
@@ -191,8 +207,57 @@ export default function OnboardingPage() {
           </h1>
           <LanguageSelection
             selectedLanguages={selectedLanguages}
-            onChange={setSelectedLanguages}
+            onChange={(langs) => {
+              setSelectedLanguages(langs);
+              setLanguageDetails((prev) =>
+                langs.map(
+                  (l) =>
+                    prev.find((d) => d.language === l) ?? {
+                      language: l,
+                      proficiency: "",
+                    },
+                ),
+              );
+            }}
           />
+
+          {selectedLanguages.length > 0 && (
+            <>
+              <h2 className="mt-6 mb-2 text-lg font-semibold">
+                Set proficiency
+              </h2>
+              <div className="space-y-4">
+                {languageDetails.map((detail, idx) => (
+                  <div
+                    key={detail.language}
+                    className="flex items-center gap-4"
+                  >
+                    <span className="flex-1 capitalize">{detail.language}</span>
+                    <select
+                      value={detail.proficiency}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setLanguageDetails((prev) => {
+                          const copy = [...prev];
+                          copy[idx] = { ...copy[idx], proficiency: val };
+                          return copy;
+                        });
+                      }}
+                      className="flex-1 rounded border px-3 py-2"
+                    >
+                      <option value="" disabled>
+                        Select proficiency
+                      </option>
+                      <option value="native">Native</option>
+                      <option value="fluent">Fluent</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="beginner">Beginner</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </>
       )}
 

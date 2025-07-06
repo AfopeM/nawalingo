@@ -155,6 +155,24 @@ export async function POST(request: Request) {
       if (availabilityData.length > 0) {
         await tx.availability.createMany({ data: availabilityData });
       }
+
+      // Ensure the user has the STUDENT role marked as APPROVED
+      await tx.userRole.upsert({
+        where: {
+          user_id_role: {
+            user_id: user.id,
+            role: "STUDENT",
+          },
+        },
+        create: {
+          user_id: user.id,
+          role: "STUDENT",
+          status: "APPROVED",
+        },
+        update: {
+          status: "APPROVED",
+        },
+      });
     });
 
     return NextResponse.json({ success: true });

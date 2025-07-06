@@ -34,14 +34,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch approved roles for this user
+    // Fetch roles that have been approved for this user
     const roles = await prisma.userRole.findMany({
-      where: { user_id: user.id, status: "approved" },
+      where: { user_id: user.id, status: "APPROVED" },
       select: { role: true },
     });
 
+    // Return role strings in lowercase so the client can simply compare e.g. "tutor", "student".
     return NextResponse.json({
-      roles: roles.map((r: { role: string }) => r.role),
+      roles: roles.map((r: { role: string }) => r.role.toLowerCase()),
     });
   } catch (error) {
     console.error("Error fetching user roles:", error);

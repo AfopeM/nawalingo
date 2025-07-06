@@ -19,6 +19,11 @@ export default function NavLinks({ isMobile = false }: NavLinksProps) {
 
   return user ? (
     <>
+      <Link href="/dashboard/apply">
+        <Button variant="outline" className={buttonClassName}>
+          Apply to teach
+        </Button>
+      </Link>
       <Link href="/dashboard">
         <Button variant="outline" className={buttonClassName}>
           Dashboard
@@ -30,6 +35,11 @@ export default function NavLinks({ isMobile = false }: NavLinksProps) {
     </>
   ) : (
     <>
+      <Link href="/signin">
+        <Button variant="outline" className={buttonClassName}>
+          Apply to teach
+        </Button>
+      </Link>
       <Link href="/signin">
         <Button className={buttonClassName}>Login</Button>
       </Link>

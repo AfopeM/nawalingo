@@ -33,21 +33,23 @@ model User {
 
 // Role management
 enum Role {
-  student
-  tutor
+  STUDENT
+  TUTOR
 }
 
 enum RoleStatus {
-  pending
-  approved
-  suspended
+  NOT_STARTED
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
 }
 
 model UserRole {
   id         String     @id @default(uuid()) @db.Uuid
   user_id    String     @db.Uuid
   role       Role
-  status     RoleStatus @default(pending)
+  status     RoleStatus @default(NOT_STARTED)
   created_at DateTime   @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -58,7 +60,7 @@ model UserRole {
 model StudentProfile {
   id                   String   @id @default(uuid()) @db.Uuid
   user_id              String   @unique @db.Uuid
-  target_languages     String[]
+  target_languages     Json // [{"language": "Spanish", "proficiency": "native"}]
   onboarding_completed Boolean  @default(false)
   created_at           DateTime @default(now())
   updated_at           DateTime @updatedAt
@@ -70,7 +72,7 @@ model StudentProfile {
 model TutorProfile {
   id                  String   @id @default(uuid()) @db.Uuid
   user_id             String   @unique @db.Uuid
-  bio                 String?
+  intro               String?
   languages_taught    Json // [{"language": "Spanish", "proficiency": "native"}]
   teaching_experience String?
   country             String?
