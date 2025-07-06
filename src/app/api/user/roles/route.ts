@@ -1,38 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 // Return the list of approved roles for the authenticated user
 export async function GET(request: Request) {
   try {
-    // Validate bearer token
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult = await getAuthenticatedUser(request);
+    if ("error" in authResult) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status },
+      );
     }
-
-    const token = authHeader.split(" ")[1];
-
-    // Create a Supabase client with the service role to verify the token
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      },
-    );
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user } = authResult;
 
     // Fetch roles that have been approved for this user
     const roles = await prisma.userRole.findMany({

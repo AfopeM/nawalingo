@@ -1,41 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { Prisma } from "@prisma/client";
+import { getAuthenticatedUser } from "@/lib/auth";
+import { dayNameToNumber, timeStringToMinutes } from "@/lib/time";
 
 // Get onboarding status
 export async function GET(request: Request) {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult = await getAuthenticatedUser(request);
+    if ("error" in authResult) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status },
+      );
     }
-
-    // Extract the token
-    const token = authHeader.split(" ")[1];
-
-    // Create a Supabase client with service role for server-side operations
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      },
-    );
-
-    // Get user from the token
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user } = authResult;
 
     const studentProfile = await prisma.studentProfile.findUnique({
       where: { user_id: user.id },
@@ -56,36 +35,15 @@ export async function GET(request: Request) {
 // Submit onboarding data
 export async function POST(request: Request) {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult2 = await getAuthenticatedUser(request);
+    if ("error" in authResult2) {
+      return NextResponse.json(
+        { error: authResult2.error },
+        { status: authResult2.status },
+      );
     }
-
-    // Extract the token
-    const token = authHeader.split(" ")[1];
-
-    // Create a Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      },
-    );
-
-    // Get user from the token
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user: user2 } = authResult2;
+    const user = user2;
 
     // Get request body
     const body = await request.json();
@@ -117,25 +75,10 @@ export async function POST(request: Request) {
         },
       });
 
-      // Replace existing student preferred availability slots
+      // Replace existing student availability slots
       await tx.availability.deleteMany({
-        where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+        where: { user_id: user.id, type: "STUDENT_AVAILABILITY" },
       });
-
-      const dayMap: Record<string, number> = {
-        Sunday: 0,
-        Monday: 1,
-        Tuesday: 2,
-        Wednesday: 3,
-        Thursday: 4,
-        Friday: 5,
-        Saturday: 6,
-      };
-
-      const toMinutes = (t: string) => {
-        const [h, m] = t.split(":").map(Number);
-        return h * 60 + m;
-      };
 
       const availabilityData = (
         selectedTimeSlots as {
@@ -145,10 +88,10 @@ export async function POST(request: Request) {
         }[]
       ).map((slot) => ({
         user_id: user.id,
-        type: "STUDENT_PREFERRED" as const,
-        day_of_week: dayMap[slot.day],
-        start_minute: toMinutes(slot.start),
-        end_minute: toMinutes(slot.end),
+        type: "STUDENT_AVAILABILITY" as const,
+        day_of_week: dayNameToNumber(slot.day),
+        start_minute: timeStringToMinutes(slot.start),
+        end_minute: timeStringToMinutes(slot.end),
         timezone: selectedTimezone,
       }));
 

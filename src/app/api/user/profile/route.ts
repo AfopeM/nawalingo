@@ -1,41 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { Prisma } from "@prisma/client";
-
-// Helper to get authenticated user from Bearer token
-async function getAuthenticatedUser(request: Request) {
-  // Get the authorization header
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return { error: "Unauthorized", status: 401 } as const;
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  // Create Supabase client with service role (server side)
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    },
-  );
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser(token);
-
-  if (userError || !user) {
-    return { error: "Unauthorized", status: 401 } as const;
-  }
-
-  return { user } as const;
-}
+import { getAuthenticatedUser } from "@/lib/auth";
+import {
+  numberToDayName,
+  timeStringToMinutes,
+  minutesToTimeString,
+  dayNameToNumber,
+} from "@/lib/time";
 
 // Fetch the current user's profile data
 export async function GET(request: Request) {
@@ -61,31 +33,13 @@ export async function GET(request: Request) {
     });
 
     const availabilities = await prisma.availability.findMany({
-      where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+      where: { user_id: user.id, type: "STUDENT_AVAILABILITY" },
     });
 
-    const dayMap = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-
-    const formatTime = (mins: number) => {
-      const h = Math.floor(mins / 60)
-        .toString()
-        .padStart(2, "0");
-      const m = (mins % 60).toString().padStart(2, "0");
-      return `${h}:${m}`;
-    };
-
     const selectedTimeSlots = availabilities.map((a) => ({
-      day: dayMap[a.day_of_week],
-      start: formatTime(a.start_minute),
-      end: formatTime(a.end_minute),
+      day: numberToDayName(a.day_of_week),
+      start: minutesToTimeString(a.start_minute),
+      end: minutesToTimeString(a.end_minute),
     }));
 
     const responsePayload = {
@@ -144,23 +98,8 @@ export async function PUT(request: Request) {
 
       // Replace existing availability entries for the student
       await tx.availability.deleteMany({
-        where: { user_id: user.id, type: "STUDENT_PREFERRED" },
+        where: { user_id: user.id, type: "STUDENT_AVAILABILITY" },
       });
-
-      const dayMap: Record<string, number> = {
-        Sunday: 0,
-        Monday: 1,
-        Tuesday: 2,
-        Wednesday: 3,
-        Thursday: 4,
-        Friday: 5,
-        Saturday: 6,
-      };
-
-      const toMinutes = (t: string) => {
-        const [h, m] = t.split(":").map(Number);
-        return h * 60 + m;
-      };
 
       const availabilityData = (
         selectedTimeSlots as {
@@ -170,10 +109,10 @@ export async function PUT(request: Request) {
         }[]
       ).map((slot) => ({
         user_id: user.id,
-        type: "STUDENT_PREFERRED" as const,
-        day_of_week: dayMap[slot.day],
-        start_minute: toMinutes(slot.start),
-        end_minute: toMinutes(slot.end),
+        type: "STUDENT_AVAILABILITY" as const,
+        day_of_week: dayNameToNumber(slot.day),
+        start_minute: timeStringToMinutes(slot.start),
+        end_minute: timeStringToMinutes(slot.end),
         timezone: selectedTimezone,
       }));
 

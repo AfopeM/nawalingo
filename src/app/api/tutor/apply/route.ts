@@ -1,33 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { Role, RoleStatus } from "@prisma/client";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const authResult = await getAuthenticatedUser(request);
+    if ("error" in authResult) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.status },
+      );
     }
-
-    const token = authHeader.split(" ")[1];
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: { autoRefreshToken: false, persistSession: false },
-      },
-    );
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user } = authResult;
 
     const body = await request.json();
     const { intro, languagesTaught, teachingExperience, country } = body;
@@ -76,10 +61,10 @@ export async function POST(request: Request) {
         create: {
           user_id: user.id,
           role: Role.TUTOR,
-          status: RoleStatus.PENDING,
+          status: RoleStatus.SUBMITTED,
         },
         update: {
-          status: RoleStatus.PENDING,
+          status: RoleStatus.SUBMITTED,
         },
       });
     });
