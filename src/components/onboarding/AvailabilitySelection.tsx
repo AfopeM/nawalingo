@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { DAYS } from "@/constant";
 import { Button } from "@/components/ui/Button";
+import { formatTimeForDisplay } from "@/lib/time";
+import { Separator } from "@/components/ui/Separator";
 
-const DAYS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => i).map((hour) => ({
-  start: `${hour.toString().padStart(2, "0")}:00`,
-  end: `${(hour + 1).toString().padStart(2, "0")}:00`,
-}));
+const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => {
+  const startHour24 = i;
+  const endHour24 = i + 1;
+
+  return {
+    // These are the internal values used for logic (24-hour format)
+    start: `${startHour24.toString().padStart(2, "0")}:00`,
+    end: `${endHour24.toString().padStart(2, "0")}:00`,
+    // These are the display values (12-hour AM/PM format)
+    displayStart: formatTimeForDisplay(startHour24),
+    displayEnd: formatTimeForDisplay(endHour24),
+  };
+});
 
 interface TimeSlot {
   day: string;
@@ -62,52 +65,63 @@ export default function AvailabilitySelection({
 
   return (
     <div className="space-y-4">
-      <div className="flex space-x-2 overflow-x-auto pb-2">
+      {/* DAY SELECTION */}
+      <div className="flex flex-wrap justify-center gap-2 overflow-x-auto pb-2">
         {DAYS.map((day) => (
           <Button
             key={day}
             variant={selectedDay === day ? "default" : "outline"}
             onClick={() => setSelectedDay(day)}
-            className="whitespace-nowrap"
+            className="flex-shrink-0 whitespace-nowrap"
           >
             {day}
           </Button>
         ))}
       </div>
 
+      {/* TIME SLOT SELECTION */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-        {TIME_SLOTS.map(({ start, end }) => (
+        {TIME_SLOTS.map(({ start, end, displayStart, displayEnd }) => (
           <button
-            key={`${start}-${end}`}
-            onClick={() => toggleTimeSlot(start, end)}
-            className={`rounded-lg border p-2 text-sm transition-colors ${
-              isSlotSelected(selectedDay, start, end)
-                ? "border-primary bg-primary/10"
-                : "border-gray-200 hover:border-primary/50"
-            }`}
+            key={`${start}-${end}`} // Use the original 24-hour format for the key
+            onClick={() => toggleTimeSlot(start, end)} // Pass original 24-hour format to toggle
+            className={`rounded-lg border p-3 text-sm font-medium transition-all duration-200 ease-in-out ${
+              isSlotSelected(selectedDay, start, end) // Check using original 24-hour format
+                ? "border-primary bg-primary text-white shadow-md"
+                : "border-gray-300 bg-white text-gray-800 hover:border-primary hover:bg-primary/5 hover:text-primary"
+            } `}
           >
-            {start} - {end}
+            {displayStart} - {displayEnd} {/* Display the formatted time */}
           </button>
         ))}
       </div>
 
-      <div className="mt-4">
-        <h4 className="mb-2 font-medium">Selected Time Slots:</h4>
+      <Separator
+        className={`${selectedSlots.length <= 0 ? "hidden" : "block"} my-8 bg-black/10`}
+      />
+
+      {/* SELECTED TIME SLOT DISPLAY */}
+      <div className={`${selectedSlots.length <= 0 ? "hidden" : "block"} mt-4`}>
+        <h3 className="mb-4 text-center text-lg font-semibold">
+          Your Selections:
+        </h3>
         <div className="space-y-2">
           {DAYS.map((day) => {
             const daySlots = selectedSlots.filter((slot) => slot.day === day);
             if (daySlots.length === 0) return null;
 
             return (
-              <div key={day} className="rounded-lg border p-2">
-                <h5 className="font-medium">{day}</h5>
-                <div className="mt-1 flex flex-wrap gap-2">
+              <div key={day} className="rounded-lg border bg-gray-50 px-6 py-4">
+                <h4 className="mb-2 font-semibold text-gray-700">{day}</h4>
+                <div className="flex flex-wrap gap-2">
                   {daySlots.map((slot) => (
                     <span
                       key={`${slot.day}-${slot.start}-${slot.end}`}
-                      className="rounded bg-primary/10 px-2 py-1 text-sm"
+                      className="inline-flex items-center rounded bg-primary/10 px-3 py-1 text-sm font-medium text-primary/50"
                     >
-                      {slot.start} - {slot.end}
+                      {/* Format the selected slot times for display here as well */}
+                      {formatTimeForDisplay(parseInt(slot.start.split(":")[0]))}{" "}
+                      - {formatTimeForDisplay(parseInt(slot.end.split(":")[0]))}
                     </span>
                   ))}
                 </div>

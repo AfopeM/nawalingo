@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/Dropdown-Menu";
 import { Button } from "@/components/ui/Button";
+import { FaSortDown } from "react-icons/fa6";
 
 interface TimezoneSelectionProps {
   selectedTimezone: string;
@@ -46,17 +47,18 @@ export default function TimezoneSelection({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-sm">
         <span className="text-sm text-gray-500">Detected timezone:</span>
         <span className="font-medium">{formatTimezone(detectedTimezone)}</span>
       </div>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
+          <Button variant="outline" className="w-full justify-around py-6">
             {selectedTimezone
               ? formatTimezone(selectedTimezone)
-              : "Select timezone"}
+              : "Select timezone"}{" "}
+            <FaSortDown className="mb-1.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[300px]">

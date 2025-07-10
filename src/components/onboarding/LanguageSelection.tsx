@@ -1,26 +1,14 @@
 "use client";
 
-// import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { FaSortDown } from "react-icons/fa6";
+import { AVAILABLE_LANGUAGES, LANGUAGE_DIFFICULTY } from "@/constant";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/Dropdown-Menu";
-
-const AVAILABLE_LANGUAGES = [
-  "Amharic",
-  "Swahili",
-  "Naija-Pidgin",
-  "Kinyarwanda",
-  "Igbo",
-  "Lingala",
-  "Hausa",
-  "Igala",
-  "Yoruba",
-  "Shona",
-];
 
 interface LanguageSelectionProps {
   selectedLanguages: string[];
@@ -31,8 +19,6 @@ export default function LanguageSelection({
   selectedLanguages,
   onChange,
 }: LanguageSelectionProps) {
-  // const [isOpen, setIsOpen] = useState(false);
-
   const toggleLanguage = (language: string) => {
     if (selectedLanguages.includes(language)) {
       onChange(selectedLanguages.filter((l) => l !== language));
@@ -47,12 +33,12 @@ export default function LanguageSelection({
         {selectedLanguages.map((language) => (
           <div
             key={language}
-            className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm"
+            className="flex items-center gap-2 rounded bg-primary/10 px-3 py-1 text-sm"
           >
             <span>{language}</span>
             <button
               onClick={() => toggleLanguage(language)}
-              className="text-primary hover:text-primary/80"
+              className="cursor-pointer text-primary hover:text-primary/80"
             >
               ×
             </button>
@@ -62,18 +48,66 @@ export default function LanguageSelection({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-full">
-            Select Languages
+          <Button
+            variant="outline"
+            className="flex w-full justify-center gap-6 py-6"
+          >
+            Select Languages <FaSortDown className="mb-1.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           {AVAILABLE_LANGUAGES.map((language) => (
             <DropdownMenuCheckboxItem
               key={language}
+              className="cursor-pointer"
               checked={selectedLanguages.includes(language)}
               onCheckedChange={() => toggleLanguage(language)}
             >
               {language}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+interface LanguageProficiencyProps {
+  selectedDifficulty: string[];
+  onChange: (languages: string[]) => void;
+}
+
+export function LanguageProficiency({
+  selectedDifficulty,
+  onChange,
+}: LanguageProficiencyProps) {
+  const toggleDifficulty = (difficulty: string) => {
+    if (selectedDifficulty.includes(difficulty)) {
+      onChange(selectedDifficulty.filter((d) => d !== difficulty));
+    } else {
+      onChange([...selectedDifficulty, difficulty]);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="flex w-full justify-center gap-6 py-6"
+          >
+            Select proficiency <FaSortDown className="mb-1.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          {LANGUAGE_DIFFICULTY.map((difficulty) => (
+            <DropdownMenuCheckboxItem
+              key={difficulty}
+              checked={selectedDifficulty.includes(difficulty)}
+              onCheckedChange={() => toggleDifficulty(difficulty)}
+            >
+              {difficulty}
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>

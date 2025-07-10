@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+// import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import LanguageSelection from "@/components/onboarding/LanguageSelection";
@@ -15,6 +16,7 @@ interface TimeSlot {
 }
 
 type OnboardingStep = "name" | "languages" | "availability" | "timezone";
+const onboardingSteps = ["name", "languages", "availability", "timezone"];
 
 interface AuthError {
   message: string;
@@ -22,7 +24,7 @@ interface AuthError {
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("name");
-  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [languageDetails, setLanguageDetails] = useState<
     { language: string; proficiency: string }[]
@@ -76,7 +78,7 @@ export default function OnboardingPage() {
     setError(null);
     switch (currentStep) {
       case "name":
-        if (!fullName.trim()) {
+        if (!userName.trim()) {
           setError("Please enter your full name");
           return;
         }
@@ -132,7 +134,7 @@ export default function OnboardingPage() {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          fullName,
+          userName,
           selectedLanguages: languageDetails,
           selectedTimeSlots,
           selectedTimezone,
@@ -166,157 +168,159 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="mx-auto mt-16 max-w-md rounded border bg-white p-8 shadow">
-      <div className="mb-8">
-        <div className="flex justify-between">
-          {["name", "languages", "availability", "timezone"].map(
-            (step, index) => (
-              <div
-                key={step}
-                className={`h-2 w-full ${index > 0 ? "ml-2" : ""} rounded ${
-                  getStepIndex(currentStep) >= index
-                    ? "bg-primary"
-                    : "bg-gray-200"
-                }`}
-              />
-            ),
-          )}
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 py-8">
+      <div className="flex w-full max-w-3xl flex-col items-center justify-center p-10 px-12 xl:py-12">
+        {/* STEP TRACKER */}
+        <div className="item-center mb-1 flex justify-center">
+          <p className="text-sm text-gray-500 uppercase lg:text-base">
+            questions{" "}
+            <span className="pl-2">
+              {getStepIndex(currentStep) + 1} / {onboardingSteps.length}
+            </span>
+          </p>
         </div>
-      </div>
 
-      {currentStep === "name" && (
-        <>
-          <h1 className="mb-4 text-2xl font-bold">What&apos;s your name?</h1>
-          <div className="space-y-4">
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Enter your full name"
-              className="w-full rounded border px-3 py-2"
-              autoComplete="name"
-            />
-          </div>
-        </>
-      )}
-
-      {currentStep === "languages" && (
-        <>
-          <h1 className="mb-4 text-2xl font-bold">
-            What languages do you want to learn?
-          </h1>
-          <LanguageSelection
-            selectedLanguages={selectedLanguages}
-            onChange={(langs) => {
-              setSelectedLanguages(langs);
-              setLanguageDetails((prev) =>
-                langs.map(
-                  (l) =>
-                    prev.find((d) => d.language === l) ?? {
-                      language: l,
-                      proficiency: "",
-                    },
-                ),
-              );
-            }}
-          />
-
-          {selectedLanguages.length > 0 && (
-            <>
-              <h2 className="mt-6 mb-2 text-lg font-semibold">
-                Set proficiency
-              </h2>
-              <div className="space-y-4">
-                {languageDetails.map((detail, idx) => (
-                  <div
-                    key={detail.language}
-                    className="flex items-center gap-4"
-                  >
-                    <span className="flex-1 capitalize">{detail.language}</span>
-                    <select
-                      value={detail.proficiency}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setLanguageDetails((prev) => {
-                          const copy = [...prev];
-                          copy[idx] = { ...copy[idx], proficiency: val };
-                          return copy;
-                        });
-                      }}
-                      className="flex-1 rounded border px-3 py-2"
-                    >
-                      <option value="" disabled>
-                        Select proficiency
-                      </option>
-                      <option value="native">Native</option>
-                      <option value="fluent">Fluent</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="beginner">Beginner</option>
-                    </select>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </>
-      )}
-
-      {currentStep === "availability" && (
-        <>
-          <h1 className="mb-4 text-2xl font-bold">
-            When are you available for lessons?
-          </h1>
-          <AvailabilitySelection
-            selectedSlots={selectedTimeSlots}
-            onChange={setSelectedTimeSlots}
-          />
-        </>
-      )}
-
-      {currentStep === "timezone" && (
-        <>
-          <h1 className="mb-4 text-2xl font-bold">
-            What&apos;s your timezone?
-          </h1>
-          <TimezoneSelection
-            selectedTimezone={selectedTimezone}
-            onChange={setSelectedTimezone}
-          />
-        </>
-      )}
-
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
-
-      <div className="mt-8 flex justify-between">
-        {currentStep !== "name" && (
-          <Button
-            variant="outline"
-            onClick={() => {
-              setError(null);
-              const steps: OnboardingStep[] = [
-                "name",
-                "languages",
-                "availability",
-                "timezone",
-              ];
-              const currentIndex = steps.indexOf(currentStep);
-              setCurrentStep(steps[currentIndex - 1]);
-            }}
-          >
-            Back
-          </Button>
+        {/* NAME */}
+        {currentStep === "name" && (
+          <>
+            <h1 className="mb-4 text-center text-2xl font-bold capitalize lg:text-3xl">
+              What&apos;s your name?
+            </h1>
+            <div className="w-3/4">
+              <input
+                type="text"
+                value={userName}
+                autoComplete="name"
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Enter your username"
+                className="w-full rounded-sm p-4 outline-1 outline-black/10"
+              />
+            </div>
+          </>
         )}
-        <Button
-          className={currentStep === "name" ? "w-full" : ""}
-          onClick={handleNext}
-          disabled={loading}
-        >
-          {loading
-            ? "Saving..."
-            : currentStep === "timezone"
-              ? "Complete"
-              : "Continue"}
-        </Button>
+
+        {/* LANGUAGES */}
+        {currentStep === "languages" && (
+          <>
+            <h1 className="mb-4 text-center text-2xl font-bold capitalize lg:text-3xl">
+              What languages do you want to learn?
+            </h1>
+            <LanguageSelection
+              selectedLanguages={selectedLanguages}
+              onChange={(langs) => {
+                setSelectedLanguages(langs);
+                setLanguageDetails((prev) =>
+                  langs.map(
+                    (l) =>
+                      prev.find((d) => d.language === l) ?? {
+                        language: l,
+                        proficiency: "",
+                      },
+                  ),
+                );
+              }}
+            />
+
+            {selectedLanguages.length > 0 && (
+              <>
+                <h2 className="mt-8 mb-4 text-lg font-semibold capitalize">
+                  language proficiency
+                </h2>
+                <div className="space-y-4">
+                  {languageDetails.map((detail, idx) => (
+                    <div
+                      key={detail.language}
+                      className="flex items-center gap-4"
+                    >
+                      <span className="flex-1 capitalize">
+                        {detail.language}
+                      </span>
+
+                      <select
+                        value={detail.proficiency}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setLanguageDetails((prev) => {
+                            const copy = [...prev];
+                            copy[idx] = { ...copy[idx], proficiency: val };
+                            return copy;
+                          });
+                        }}
+                        className="flex-1 rounded border px-3 py-2"
+                      >
+                        <option value="" disabled>
+                          Select proficiency
+                        </option>
+                        <option value="native">Native</option>
+                        <option value="fluent">Fluent</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="beginner">Beginner</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {/* AVAILABILITY */}
+        {currentStep === "availability" && (
+          <>
+            <h1 className="mb-4 text-center text-2xl font-bold capitalize">
+              When are you available for lessons?
+            </h1>
+            <AvailabilitySelection
+              selectedSlots={selectedTimeSlots}
+              onChange={setSelectedTimeSlots}
+            />
+          </>
+        )}
+
+        {/* TIMEZONE */}
+        {currentStep === "timezone" && (
+          <>
+            <h1 className="mb-4 text-2xl font-bold capitalize">
+              What&apos;s your timezone?
+            </h1>
+            <TimezoneSelection
+              selectedTimezone={selectedTimezone}
+              onChange={setSelectedTimezone}
+            />
+          </>
+        )}
+
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+
+        {/* NEXT/BACK BUTTONS */}
+        <div className="mt-10 flex w-full justify-center gap-12">
+          {currentStep !== "name" && (
+            <Button
+              variant="outline"
+              className="w-1/3 p-6 uppercase"
+              onClick={() => {
+                setError(null);
+                const currentIndex = onboardingSteps.indexOf(currentStep);
+                setCurrentStep(
+                  onboardingSteps[currentIndex - 1] as OnboardingStep,
+                );
+              }}
+            >
+              Back
+            </Button>
+          )}
+          <Button
+            disabled={loading}
+            onClick={handleNext}
+            className={`${currentStep === "name" ? "mx-auto w-3/4" : "w-1/3"} p-6 uppercase`}
+          >
+            {loading
+              ? "Saving..."
+              : currentStep === "timezone"
+                ? "Complete"
+                : "Next"}
+          </Button>
+        </div>
       </div>
     </div>
   );

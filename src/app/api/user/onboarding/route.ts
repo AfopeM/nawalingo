@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
     // Get request body
     const body = await request.json();
-    const { fullName, selectedLanguages, selectedTimeSlots, selectedTimezone } =
+    const { userName, selectedLanguages, selectedTimeSlots, selectedTimezone } =
       body;
 
     // Update user profile and preferences in a transaction
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       await tx.user.update({
         where: { id: user.id },
         data: {
-          username: fullName,
+          username: userName,
           timezone: selectedTimezone,
         },
       });
