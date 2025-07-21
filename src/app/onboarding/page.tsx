@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import LanguageSelection from "@/components/onboarding/LanguageSelection";
-import AvailabilitySelection from "@/components/onboarding/AvailabilitySelection";
-import TimezoneSelection from "@/components/onboarding/TimezoneSelection";
+import LanguageSelection from "@/components/forms/LanguageSelection";
+import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
+import TimezoneSelection from "@/components/forms/TimezoneSelection";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface TimeSlot {
@@ -169,15 +168,16 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 py-8">
-      <div className="flex w-full max-w-3xl flex-col items-center justify-center p-10 px-12 xl:py-12">
+      <div className="flex w-full max-w-3xl flex-col items-center justify-center px-12 xl:py-12">
         {/* STEP TRACKER */}
         <div className="item-center mb-1 flex justify-center">
-          <p className="text-sm text-gray-500 uppercase lg:text-base">
+          <div className="text-center text-sm text-gray-500 uppercase lg:text-base">
             questions{" "}
             <span className="pl-2">
-              {getStepIndex(currentStep) + 1} / {onboardingSteps.length}
+              {onboardingSteps.indexOf(currentStep) + 1} /{" "}
+              {onboardingSteps.length}
             </span>
-          </p>
+          </div>
         </div>
 
         {/* NAME */}
@@ -324,14 +324,4 @@ export default function OnboardingPage() {
       </div>
     </div>
   );
-}
-
-function getStepIndex(step: OnboardingStep): number {
-  const steps: OnboardingStep[] = [
-    "name",
-    "languages",
-    "availability",
-    "timezone",
-  ];
-  return steps.indexOf(step);
 }

@@ -29,7 +29,7 @@ export default function LanguageSelection({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         {selectedLanguages.map((language) => (
           <div
             key={language}
@@ -47,14 +47,16 @@ export default function LanguageSelection({
       </div>
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="flex w-full justify-center gap-6 py-6"
-          >
-            Select Languages <FaSortDown className="mb-1.5" />
-          </Button>
-        </DropdownMenuTrigger>
+        <div className="flex justify-center">
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex w-full max-w-xs justify-between py-6"
+            >
+              Select Languages <FaSortDown className="mb-1.5" />
+            </Button>
+          </DropdownMenuTrigger>
+        </div>
         <DropdownMenuContent className="w-56">
           {AVAILABLE_LANGUAGES.map((language) => (
             <DropdownMenuCheckboxItem

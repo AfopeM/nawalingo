@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Separator } from "@/components/ui/Separator";
-import LanguageSelection from "@/components/onboarding/LanguageSelection";
-import AvailabilitySelection from "@/components/onboarding/AvailabilitySelection";
-import TimezoneSelection from "@/components/onboarding/TimezoneSelection";
+import LanguageSelection from "@/components/forms/LanguageSelection";
+import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
+import TimezoneSelection from "@/components/forms/TimezoneSelection";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface TimeSlot {

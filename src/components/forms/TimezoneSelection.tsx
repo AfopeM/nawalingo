@@ -13,11 +13,13 @@ import { FaSortDown } from "react-icons/fa6";
 
 interface TimezoneSelectionProps {
   selectedTimezone: string;
+  showDetectedTimeZone?: boolean;
   onChange: (timezone: string) => void;
 }
 
 export default function TimezoneSelection({
   selectedTimezone,
+  showDetectedTimeZone = true,
   onChange,
 }: TimezoneSelectionProps) {
   const [detectedTimezone, setDetectedTimezone] = useState<string>("");
@@ -47,10 +49,14 @@ export default function TimezoneSelection({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-sm text-gray-500">Detected timezone:</span>
-        <span className="font-medium">{formatTimezone(detectedTimezone)}</span>
-      </div>
+      {showDetectedTimeZone && (
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-sm text-gray-500">Detected timezone:</span>
+          <span className="font-medium">
+            {formatTimezone(detectedTimezone)}
+          </span>
+        </div>
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
