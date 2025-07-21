@@ -10,16 +10,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "shadow-xs border border-nawalingo-primary bg-nawalingo-primary text-nawalingo-light font-bold tracking-wide dark:text-nawalingo-dark hover:text-nawalingo-primary dark:hover:text-nawalingo-light hover:border hover:border-nawalingo-primary/75 hover:bg-nawalingo-primary/10 backdrop-blur-sm",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+          "bg-nawalingo-dark hover:text-nawalingo-dark hover:bg-nawalingo-dark/10 text-nawalingo-light backdrop-blur-sm border border-nawalingo-dark/25",
+
+        outline:
+          "shadow-xs text-nawalingo-gray-dark border border-nawalingo-gray-light/25 hover:bg-nawalingo-light/80 dark:bg-nawalingo-dark/80 dark:hover:text-nawalingo-light dark:hover:border-nawalingo-primary/75",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "rounded-md p-2 transition-colors hover:bg-nawalingo-dark/10 dark:hover:bg-nawalingo-light/10 text-nawalingo-gray-dark dark:text-nawalingo-gray-light",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

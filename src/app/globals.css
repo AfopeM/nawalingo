@@ -4,7 +4,19 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-pop: "Poppins", sans-serif;
+  /* BASE COLORS */
+  --color-nawalingo-primary: #e04926;
+
+  /* DARK THEME COLORS */
+  --color-nawalingo-dark: #121212;
+  --color-nawalingo-gray-dark: #6b7280;
+
+  /* LIGHT THEME COLORS */
+  --color-nawalingo-light: #f2f2f2;
+  --color-nawalingo-gray-light: #9ca3af;
+
+  /* FONTS */
+  --font-poppins: "Poppins", sans-serif;
 }
 
 @theme inline {
@@ -53,10 +65,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: var(--color-nawalingo-primary);
+  --primary-foreground: var(--color-nawalingo-light);
+  --secondary: var(--color-nawalingo-light);
+  --secondary-foreground: var(--color-nawalingo-dark);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -87,10 +99,10 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --primary: var(--color-nawalingo-primary);
+  --primary-foreground: var(--color-nawalingo-dark);
+  --secondary: var(--color-nawalingo-dark);
+  --secondary-foreground: var(--color-nawalingo-light);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
@@ -121,4 +133,24 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* === Custom Scrollbar === */
+html::-webkit-scrollbar {
+  width: 12px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--color-nawalingo-primary);
+  border-radius: 20px;
+  border: 2px solid var(--background);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-nawalingo-primary) var(--background);
 }

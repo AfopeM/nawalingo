@@ -1,44 +1,50 @@
 "use client";
 
-import Logo from "./Logo";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import NavLinks from "./NavLinks";
-import { Menu } from "lucide-react";
+import AuthLinks from "./AuthLinks";
+import { LuMenu } from "react-icons/lu";
+import { FaXmark } from "react-icons/fa6";
 import { Button } from "@/components/ui/Button";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import {
-  Sheet,
-  SheetTitle,
-  SheetHeader,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/Sheet";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 export default function MobileMenu() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useLockBodyScroll(isOpen);
+
+  // Render overlay via React Portal so it sits outside nav stacking context
+  const overlayPortal = isOpen
+    ? createPortal(
+        <div
+          className="fixed inset-0 z-40 bg-nawalingo-dark/20 backdrop-blur-sm lg:hidden dark:bg-nawalingo-light/20"
+          onClick={() => setIsOpen(false)}
+        />,
+        document.body,
+      )
+    : null;
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-        <SheetHeader className="mt-12">
-          <SheetTitle>
-            <Logo className="text-xl" />
-          </SheetTitle>
-        </SheetHeader>
+    <>
+      <Button
+        variant="ghost"
+        className="cursor-pointer text-nawalingo-dark duration-300 lg:hidden dark:text-nawalingo-light"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <FaXmark size={20} /> : <LuMenu size={20} />}
+      </Button>
 
-        <div className="flex flex-col gap-4 py-4">
-          <div className="flex flex-col gap-2">
-            <NavLinks isMobile />
-          </div>
-
-          <div className="mx-auto mt-2">
-            <ThemeToggle />
+      {/* FULL-SCREEN OVERLAY (rendered outside navbar via portal) */}
+      {overlayPortal}
+      {isOpen ? (
+        <div className="absolute top-0 left-1/2 z-50 w-4/5 -translate-x-1/2 translate-y-24 rounded-lg bg-nawalingo-dark px-12 py-6 text-center md:w-1/2 lg:hidden dark:bg-nawalingo-light">
+          <NavLinks isMobile />
+          <div className="mt-4">
+            <AuthLinks isMobile />
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      ) : null}
+    </>
   );
 }
