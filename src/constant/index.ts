@@ -27,3 +27,8 @@ export const DAYS = [
   "Saturday",
   "Sunday",
 ] as const;
+
+export enum AuthMode {
+  Signup = "signup",
+  Signin = "signin",
+}

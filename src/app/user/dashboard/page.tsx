@@ -26,7 +26,7 @@ export default function DashboardPage() {
       setLoading(true);
 
       if (!session) {
-        router.replace("/signin");
+        router.replace("/auth/signin");
         return;
       }
 

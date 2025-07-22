@@ -99,7 +99,7 @@ export default function TutorApplicationForm() {
       }
 
       // Redirect user to tutor dashboard once application is submitted
-      router.push("/dashboard/profile");
+      router.push("/user/dashboard/profile");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Something went wrong";

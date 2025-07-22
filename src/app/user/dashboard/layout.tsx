@@ -26,12 +26,13 @@ import {
 } from "@/components/ui/Dropdown-Menu";
 import { UserRound } from "lucide-react";
 import { hasRole } from "@/lib/roles";
+import { Button } from "@/components/ui/Button";
 
-export default function TutorDashboardLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ProtectedRoute requiredRoles={["tutor"]}>
+    <ProtectedRoute>
       <SidebarProvider className="min-h-svh w-full">
         <Sidebar collapsible="icon" className="border-r">
           {/* Sidebar header with logo */}
@@ -46,11 +47,11 @@ export default function TutorDashboardLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={false}>
                   <Link
-                    href="/dashboard/tutor/profile"
+                    href="/user/dashboard/profile"
                     className="flex w-full items-center gap-2"
                   >
                     <UserRound className="size-4" />
-                    <span>Teacher Profile</span>
+                    <span>Profile</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -59,7 +60,7 @@ export default function TutorDashboardLayout({
 
           {/* Sidebar footer with user details */}
           <SidebarFooter>
-            <UserInfoDropdownTutor />
+            <UserInfoDropdown />
           </SidebarFooter>
         </Sidebar>
 
@@ -70,15 +71,11 @@ export default function TutorDashboardLayout({
   );
 }
 
-// Dropdown with switch back to student profile
-function UserInfoDropdownTutor() {
-  const { user } = useAuth();
+// Client component to display current user info and dropdown
+function UserInfoDropdown() {
+  const { user, signOut } = useAuth();
   const [fullName, setFullName] = useState<string>("");
   const [isTutor, setIsTutor] = useState(false);
-
-  useEffect(() => {
-    hasRole("tutor").then(setIsTutor);
-  }, []);
 
   useEffect(() => {
     const fetchName = async () => {
@@ -92,6 +89,11 @@ function UserInfoDropdownTutor() {
     };
     fetchName();
   }, [user]);
+
+  // Determine if the current user already has the tutor role
+  useEffect(() => {
+    hasRole("tutor").then(setIsTutor);
+  }, []);
 
   if (!user) return null;
 
@@ -124,13 +126,22 @@ function UserInfoDropdownTutor() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/tutor/profile">Teacher Profile</Link>
+          <Link href="/user/dashboard/profile">Profile</Link>
         </DropdownMenuItem>
-        {isTutor && (
+        {isTutor ? (
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/profile">Switch to Student Profile</Link>
+            <Link href="/user/dashboard/tutor/profile">
+              Switch to Teacher Profile
+            </Link>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem asChild>
+            <Link href="/user/dashboard/apply">Apply to Teach</Link>
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem asChild>
+          <Button onClick={signOut}>Log Out</Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

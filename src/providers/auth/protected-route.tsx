@@ -20,7 +20,7 @@ export default function ProtectedRoute({
   useEffect(() => {
     // Check 1: Are you even logged in?
     if (!loading && !user) {
-      router.replace("/signin"); // No, send them to the sign-in page!
+      router.replace("/auth/signin"); // No, send them to the sign-in page!
       return; // Stop here, no more checks needed.
     }
 
@@ -51,7 +51,7 @@ export default function ProtectedRoute({
   }
   if (roleCheck === "forbidden") {
     // Optionally redirect or show error
-    router.replace("/dashboard");
+    router.replace("/user/dashboard");
     return null;
   }
   return <>{children}</>;

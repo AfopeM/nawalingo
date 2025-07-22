@@ -44,7 +44,7 @@ export default function AuthLinks({ isMobile = false }: AuthLinksProps) {
     return (
       <>
         {/* DASHBOARD BUTTON */}
-        <Link href="/dashboard" passHref>
+        <Link href="/user/dashboard" passHref>
           <Button variant="outline" className={getButtonClasses(true)}>
             Dashboard
           </Button>
@@ -62,14 +62,14 @@ export default function AuthLinks({ isMobile = false }: AuthLinksProps) {
     return (
       <>
         {/* LOGIN BUTTON*/}
-        <Link href="/signin" passHref>
+        <Link href="/auth/signin" passHref>
           <Button variant="outline" className={getButtonClasses(true)}>
             Login
           </Button>
         </Link>
 
         {/* SIGNUP BUTTON*/}
-        <Link href="/signup" passHref>
+        <Link href="/auth/signup" passHref>
           <Button className={getButtonClasses(false)}>Signup</Button>
         </Link>
       </>
