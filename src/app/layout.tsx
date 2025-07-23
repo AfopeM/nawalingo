@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import ErrorBoundary from "@/providers/error/ErrorBoundary";
 import { AuthProvider } from "@/providers/auth/auth-provider";
 import { ThemeProvider } from "@/providers/theme/theme-provider";
+import MainLayout from "@/components/layout/MainLayout";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,7 +28,9 @@ export default function RootLayout({
       <body className={`${poppins.variable} font-pop font-normal antialiased`}>
         <AuthProvider>
           <ThemeProvider>
-            <ErrorBoundary>{children}</ErrorBoundary>
+            <ErrorBoundary>
+              <MainLayout>{children}</MainLayout>
+            </ErrorBoundary>
           </ThemeProvider>
         </AuthProvider>
       </body>

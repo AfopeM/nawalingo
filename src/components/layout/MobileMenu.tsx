@@ -1,16 +1,33 @@
 "use client";
 
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import NavLinks from "./NavLinks";
-import AuthLinks from "./AuthLinks";
 import { LuMenu } from "react-icons/lu";
+import { createPortal } from "react-dom";
 import { FaXmark } from "react-icons/fa6";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { useResponsive } from "@/hooks/useResponsive";
+import NavLinks from "@/components/navigation/NavLinks";
+import AuthLinks from "@/components/navigation/AuthLinks";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Close the menu whenever the user navigates to a different route
+  const pathname = usePathname();
+  useEffect(() => {
+    // Whenever pathname changes (i.e., a navigation happened) close the menu
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Close the menu automatically if the screen becomes large (≥ lg breakpoint)
+  const { isDesktop } = useResponsive();
+  useEffect(() => {
+    if (isDesktop) {
+      setIsOpen(false);
+    }
+  }, [isDesktop]);
 
   useLockBodyScroll(isOpen);
 

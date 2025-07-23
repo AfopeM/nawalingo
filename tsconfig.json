@@ -19,9 +19,12 @@
       }
     ],
     "paths": {
+      "@/ui/*": ["./src/components/ui/*"],
+      "@/forms/*": ["./src/components/forms/*"],
+      "@/navigation/*": ["./src/components/navigation/*"],
       "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/generated"]
 }

@@ -1,7 +1,7 @@
 "use client";
 import Logo from "./Logo";
 import NavLinks from "./NavLinks";
-import AuthLinks from "./AuthLinks";
+import AuthLinks from "@/components/navigation/AuthLinks";
 import MobileMenu from "./MobileMenu";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 

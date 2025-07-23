@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarSeparator,
-} from "@/components/ui/Sidebar";
+} from "@/components/layout/Sidebar";
 import ProtectedRoute from "@/providers/auth/protected-route";
 import Logo from "@/components/navigation/Logo";
 import Link from "next/link";
