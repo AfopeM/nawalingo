@@ -1,4 +1,4 @@
-import { DAYS } from "@/constant";
+import { DAYS } from "@/constants";
 
 export type DayName = (typeof DAYS)[number];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DAYS } from "@/constant";
+import { DAYS } from "@/constants";
 import { Button } from "@/components/ui/Button";
 import { formatTimeForDisplay } from "@/lib/time";
 import { Separator } from "@/components/ui/Separator";

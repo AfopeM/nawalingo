@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "shadow-xs text-nawalingo-gray-dark border border-nawalingo-gray-light/25 hover:bg-nawalingo-light/80 dark:bg-nawalingo-dark/80 dark:hover:text-nawalingo-light dark:hover:border-nawalingo-primary/75",
         ghost:
           "rounded-md p-2 transition-colors hover:bg-nawalingo-dark/10 dark:hover:bg-nawalingo-light/10 text-nawalingo-gray-dark dark:text-nawalingo-gray-light",
+        blank: "",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

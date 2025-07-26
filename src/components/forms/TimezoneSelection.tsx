@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/Dropdown-Menu";
+} from "@/ui/DropdownMenu";
 import { Button } from "@/components/ui/Button";
 import { FaSortDown } from "react-icons/fa6";
 

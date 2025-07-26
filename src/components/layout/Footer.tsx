@@ -10,7 +10,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-nawalingo-dark pt-10 pb-8 text-center dark:bg-nawalingo-light">
+    <footer className="bg-nawalingo-dark pt-10 text-center dark:bg-nawalingo-light">
       {/* MAIN FOOTER CONTENT */}
       <div className="px-8">
         {/* SOCIAL MEDIA ICONS */}

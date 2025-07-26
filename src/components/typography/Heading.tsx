@@ -16,8 +16,8 @@ export default function Heading({
       return (
         <h1
           className={cn(
-            className,
             "mb-4 text-5xl font-black tracking-tight uppercase md:text-7xl",
+            className,
           )}
         >
           {children}
@@ -27,8 +27,8 @@ export default function Heading({
       return (
         <h2
           className={cn(
+            "text-3xl font-black tracking-tight text-nawalingo-dark capitalize lg:text-5xl dark:text-nawalingo-light",
             className,
-            "text-4xl font-black tracking-tight text-nawalingo-dark capitalize lg:text-5xl dark:text-nawalingo-light",
           )}
         >
           {children}

@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/Button";
 import { FaSortDown } from "react-icons/fa6";
-import { AVAILABLE_LANGUAGES, LANGUAGE_DIFFICULTY } from "@/constant";
+import { AVAILABLE_LANGUAGES, LANGUAGE_DIFFICULTY } from "@/constants";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/Dropdown-Menu";
+} from "@/ui/DropdownMenu";
 
 interface LanguageSelectionProps {
   selectedLanguages: string[];

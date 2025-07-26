@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthMode } from "@/constant";
+import { AuthMode } from "@/constants";
 import Heading from "@/components/typography/Heading";
 import Tagline from "@/components/typography/Tagline";
 import AuthForm from "@/components/forms/AuthForm";

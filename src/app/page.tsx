@@ -1,9 +1,5 @@
-import HeroSection from "@/components/section/HeroSection";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <div className="container mx-auto flex flex-col items-center gap-4">
-      <HeroSection />
-    </div>
-  );
+export default async function HomePage() {
+  redirect("/main");
 }

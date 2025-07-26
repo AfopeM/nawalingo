@@ -1,16 +1,11 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { NAV_PATHS } from "@/constants";
 import { Button } from "@/components/ui/Button";
 
 interface NavLinksProps {
   isMobile?: boolean;
 }
-
-const navPaths = [
-  { name: "languages", path: "/languages" },
-  { name: "become a tutor", path: "/become-a-tutor" },
-  { name: "pricing", path: "/pricing" },
-];
 
 export default function NavLinks({ isMobile = false }: NavLinksProps) {
   const getButtonClasses = () => {
@@ -32,13 +27,15 @@ export default function NavLinks({ isMobile = false }: NavLinksProps) {
 
   return (
     <div className={getContainerClasses()}>
-      {navPaths.map((nav) => (
-        <Link key={nav.name} href={nav.path} passHref>
-          <Button variant="ghost" className={getButtonClasses()}>
-            {nav.name}
-          </Button>
-        </Link>
-      ))}
+      {Object.entries(NAV_PATHS).map(([key, value]) => {
+        return (
+          <Link key={key} href={value} passHref>
+            <Button variant="ghost" className={getButtonClasses()}>
+              {key}
+            </Button>
+          </Link>
+        );
+      })}
     </div>
   );
 }

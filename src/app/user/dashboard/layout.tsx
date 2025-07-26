@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/Dropdown-Menu";
+} from "@/ui/DropdownMenu";
 import { UserRound } from "lucide-react";
 import { hasRole } from "@/lib/roles";
 import { Button } from "@/components/ui/Button";

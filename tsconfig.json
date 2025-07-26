@@ -22,6 +22,10 @@
       "@/ui/*": ["./src/components/ui/*"],
       "@/forms/*": ["./src/components/forms/*"],
       "@/navigation/*": ["./src/components/navigation/*"],
+      "@/layout/*": ["./src/components/layout/*"],
+      "@/typography/*": ["./src/components/typography/*"],
+      "@/section/*": ["./src/components/section/*"],
+
       "@/*": ["./src/*"]
     }
   },

@@ -3,7 +3,7 @@ export { AuthMode };
 import { z } from "zod";
 import Link from "next/link";
 import { useState } from "react";
-import { AuthMode } from "@/constant";
+import { AuthMode } from "@/constants";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";

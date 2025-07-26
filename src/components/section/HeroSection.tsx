@@ -5,6 +5,7 @@ import Heading from "@/components/typography/Heading";
 import { Button } from "@/components/ui/Button";
 import Description from "@/components/typography/Description";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { NAV_PATHS } from "@/constants";
 
 export default function HeroSection() {
   return (
@@ -29,9 +30,7 @@ export default function HeroSection() {
       {/* MAIN CONTENT */}
       <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center">
         {/* HERO CONTENT */}
-        <SectionHeading
-          className={`relative z-10 flex max-w-md flex-col items-center px-4 lg:max-w-6xl`}
-        >
+        <SectionHeading className="relative z-10 flex max-w-md flex-col items-center px-4 lg:max-w-6xl">
           {/* BADGE */}
           <Tagline className="mb-6 flex items-center gap-2">
             <span className="h-2 w-2 animate-pulse rounded-full bg-red-600" />
@@ -58,7 +57,7 @@ export default function HeroSection() {
                 begin your lesson
               </Button>
             </Link>
-            <Link href="/languages" className="w-full">
+            <Link href={NAV_PATHS.languages} className="w-full">
               <Button
                 size="lg"
                 variant="outline"

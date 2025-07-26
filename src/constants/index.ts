@@ -32,3 +32,9 @@ export enum AuthMode {
   Signup = "signup",
   Signin = "signin",
 }
+
+export const NAV_PATHS = {
+  languages: "/main/languages",
+  "become a tutor": "/main/become-a-tutor",
+  pricing: "/main/pricing",
+} as const;
