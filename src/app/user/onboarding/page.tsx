@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 import LanguageSelection from "@/components/forms/LanguageSelection";
 import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
 import TimezoneSelection from "@/components/forms/TimezoneSelection";

@@ -1,23 +1,20 @@
-import React from "react";
-
-interface SectionProps extends React.HTMLAttributes<HTMLElement> {
-  as?: React.ElementType;
-  className?: string;
-  children: React.ReactNode;
-}
+import { cn } from "@/lib/utils";
 
 export default function SectionWrapper({
-  as: Tag = "section",
-  className = "",
   children,
-  ...props
-}: SectionProps) {
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <Tag
-      className={`relative z-10 flex flex-col items-center py-28 text-center ${className}`.trim()}
-      {...props}
+    <main
+      className={cn(
+        "relative container mx-auto flex flex-col items-center px-12 text-center",
+        className,
+      )}
     >
       {children}
-    </Tag>
+    </main>
   );
 }

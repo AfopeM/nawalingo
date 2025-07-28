@@ -26,7 +26,7 @@ import {
 } from "@/ui/DropdownMenu";
 import { UserRound } from "lucide-react";
 import { hasRole } from "@/lib/roles";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 
 export default function DashboardLayout({
   children,

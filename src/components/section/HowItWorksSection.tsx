@@ -1,13 +1,10 @@
-import Tagline from "@/typography/Tagline";
-import Heading from "@/typography/Heading";
 import { SlCalender } from "react-icons/sl";
 import { HiTrendingUp } from "react-icons/hi";
-import SectionHeading from "@/ui/SectionHeading";
-import Description from "@/typography/Description";
+import SectionHeading from "@/common/SectionHeading";
 import { LuUserRoundSearch } from "react-icons/lu";
 import { TbLanguageHiragana } from "react-icons/tb";
 import { steps as stepData } from "@/constants/steps";
-import SectionWrapper from "@/layout/SectionWrapper";
+import { Tagline, Heading, Description } from "@/common/Typography";
 
 const icons = [TbLanguageHiragana, LuUserRoundSearch, SlCalender, HiTrendingUp];
 
@@ -19,21 +16,19 @@ export default function HowItWorksSection() {
   }));
 
   return (
-    <SectionWrapper>
+    <SectionHeading>
       {/* SECTION HEADER */}
-      <SectionHeading>
-        <Tagline>How It Works</Tagline>
-        <Heading>
-          Learning a New Language Shouldn&apos;t Be Complicated.
-        </Heading>
-        <Description>
-          Here&apos;s how we make it fast, easy, and effective to start speaking
-          a plethora of African languages without stress or guesswork.
-        </Description>
-      </SectionHeading>
+      <Tagline>How It Works</Tagline>
+      <Heading className="mt-4">
+        Learning a New Language Shouldn&apos;t Be Complicated.
+      </Heading>
+      <Description>
+        Here&apos;s how we make it fast, easy, and effective to start speaking a
+        plethora of African languages without stress or guesswork.
+      </Description>
 
       {/* STEPS */}
-      <div className="grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="mt-10 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
         {features.map((feature, index) => (
           <article
             key={index}
@@ -49,6 +44,6 @@ export default function HowItWorksSection() {
           </article>
         ))}
       </div>
-    </SectionWrapper>
+    </SectionHeading>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import ProfileForm from "@/components/profile/ProfileForm";
 import ProtectedRoute from "@/providers/auth/protected-route";
 import { useAuth } from "@/providers/auth/auth-provider";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 
 export default function TeacherProfilePage() {
   const [showSuccess, setShowSuccess] = useState(false);

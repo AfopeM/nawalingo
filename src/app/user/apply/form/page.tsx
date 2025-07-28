@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Separator } from "@/components/ui/Separator";
+import { Button } from "@/common/Button";
+import { Separator } from "@/common/Separator";
 import { useAuth } from "@/providers/auth/auth-provider";
 import ProtectedRoute from "@/providers/auth/protected-route";
 import CountrySelection from "@/components/forms/CountrySelection";

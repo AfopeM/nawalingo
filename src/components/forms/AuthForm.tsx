@@ -3,11 +3,12 @@ export { AuthMode };
 import { z } from "zod";
 import Link from "next/link";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { AuthMode } from "@/constants";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
@@ -40,6 +41,20 @@ export default function AuthForm({ mode }: AuthFormProps) {
   });
 
   const [formError, setFormError] = useState<string | null>(null);
+
+  // GOOGLE OAUTH SIGN IN / SIGN UP
+  const handleGoogleAuth = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/user/dashboard`,
+        },
+      });
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     setFormError(null);
@@ -125,6 +140,27 @@ export default function AuthForm({ mode }: AuthFormProps) {
         className="mt-2 w-full rounded-sm py-6 text-lg font-extrabold tracking-wide uppercase"
       >
         {isSubmitting ? submittingLabel : submitLabel}
+      </Button>
+
+      {/* DIVIDER */}
+      <div className="relative flex items-center">
+        <span className="flex-grow border-t border-nawalingo-dark/20 dark:border-nawalingo-light/20" />
+        <span className="mx-4 text-sm tracking-wider text-nawalingo-dark/50 uppercase dark:text-nawalingo-light/50">
+          or
+        </span>
+        <span className="flex-grow border-t border-nawalingo-dark/20 dark:border-nawalingo-light/20" />
+      </div>
+
+      {/* GOOGLE AUTH BUTTON */}
+      <Button
+        type="button"
+        variant="outline"
+        disabled={isSubmitting}
+        onClick={handleGoogleAuth}
+        className="w-full rounded-sm py-6 text-lg font-semibold tracking-wide"
+      >
+        <FcGoogle className="size-5" />
+        {isSignup ? "Sign up with Google" : "Sign in with Google"}
       </Button>
 
       {/* FOOTER LINK */}

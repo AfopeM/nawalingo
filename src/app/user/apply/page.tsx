@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 import ProtectedRoute from "@/providers/auth/protected-route";
 
 export default function ApplyToTeachPage() {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface AuthLinksProps {
@@ -21,7 +21,7 @@ export default function AuthLinks({ isMobile = false }: AuthLinksProps) {
 
   // Define mobile-specific styles for the 'default' variant button (Signup/Logout)
   const mobileDefaultStyles =
-    "mt-4 w-full py-6 text-xl hover:bg-transparent hover:dark:bg-nawalingo-primary/20 hover:dark:text-nawalingo-primary";
+    "mt-8 w-full py-6 text-xl hover:bg-transparent hover:dark:bg-nawalingo-primary/20 hover:dark:text-nawalingo-primary";
 
   // Define desktop-specific styles (primarily hiding on small screens)
   const desktopStyles = "hidden lg:flex";

@@ -1,29 +1,24 @@
 import Link from "next/link";
-import { Button } from "@/ui/Button";
+import { Button } from "@/common/Button";
+import SectionHeading from "@/common/SectionHeading";
 import { IoLanguageSharp } from "react-icons/io5";
-import SectionHeading from "@/ui/SectionHeading";
-import Tagline from "@/typography/Tagline";
-import Heading from "@/typography/Heading";
-import Description from "@/typography/Description";
-import SectionWrapper from "@/layout/SectionWrapper";
+import { Tagline, Heading, Description } from "@/common/Typography";
 import { mostPopularLanguages as mostPopularLanguageData } from "@/constants/languages";
 
 export default function ChooseLanguageSection() {
   return (
-    <SectionWrapper>
+    <SectionHeading>
       {/* SECTION HEADER */}
-      <SectionHeading>
-        <Tagline>level up your fluency</Tagline>
-        <Heading>choose your language</Heading>
-        <Description>
-          Whether you&apos;re learning for travel, heritage, or career. Our
-          lessons help you speak like a local, not a tourist. Here are most
-          popular languages
-        </Description>
-      </SectionHeading>
+      <Tagline>level up your fluency</Tagline>
+      <Heading className="mt-4">choose your language</Heading>
+      <Description>
+        Whether you&apos;re learning for travel, heritage, or career. Our
+        lessons help you speak like a local, not a tourist. Here are most
+        popular languages
+      </Description>
 
       {/* LANGUAGES */}
-      <div className="mb-10 grid grid-cols-1 gap-4 justify-self-center text-center md:grid-cols-2">
+      <div className="my-10 grid grid-cols-1 gap-4 justify-self-center text-center md:grid-cols-2">
         {mostPopularLanguageData.map((item, index) => {
           return (
             <div
@@ -43,11 +38,11 @@ export default function ChooseLanguageSection() {
       </div>
 
       {/* BUTTON */}
-      <Link href="/languages">
+      <Link href="/main/languages">
         <Button size="lg" className="py-6 font-bold tracking-wide uppercase">
           learn more
         </Button>
       </Link>
-    </SectionWrapper>
+    </SectionHeading>
   );
 }

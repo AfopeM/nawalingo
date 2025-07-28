@@ -23,7 +23,7 @@
       "@/forms/*": ["./src/components/forms/*"],
       "@/navigation/*": ["./src/components/navigation/*"],
       "@/layout/*": ["./src/components/layout/*"],
-      "@/typography/*": ["./src/components/typography/*"],
+      "@/common/*": ["./src/components/common/*"],
       "@/section/*": ["./src/components/section/*"],
 
       "@/*": ["./src/*"]

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserRoles } from "@/lib/roles";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/common/Button";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface OnboardingData {

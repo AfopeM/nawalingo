@@ -1,31 +1,28 @@
 "use client";
-import { Button } from "@/ui/Button";
+import { Button } from "@/common/Button";
 import React, { useState } from "react";
 import PricingCard from "@/ui/PricingCard";
-import SectionHeading from "@/ui/SectionHeading";
-import SectionWrapper from "@/layout/SectionWrapper";
-import Tagline from "@/typography/Tagline";
-import Heading from "@/typography/Heading";
-import Description from "@/typography/Description";
+import SectionHeading from "@/common/SectionHeading";
 import { pricingTiers } from "@/constants/pricing";
+import { Tagline, Heading, Description } from "@/common/Typography";
 
 export default function PricingSection() {
   const [view, setView] = useState<"single" | "group">("single");
 
   return (
-    <SectionWrapper>
+    <SectionHeading>
       {/* SECTION HEADER */}
-      <SectionHeading>
-        <Tagline>Invest in Fluency, Not Just Lessons</Tagline>
-        <Heading>Simple Pricing. No contracts. No hidden fees.</Heading>
-        <Description>
-          Choose a plan that fits your goals, your schedule, and your pace. No
-          pressure. Just progress.
-        </Description>
-      </SectionHeading>
+      <Tagline>Invest in Fluency, Not Just Lessons</Tagline>
+      <Heading className="mt-4">
+        Simple Pricing. No contracts. No hidden fees.
+      </Heading>
+      <Description>
+        Choose a plan that fits your goals, your schedule, and your pace. No
+        pressure. Just progress.
+      </Description>
 
       {/* TOGGLE */}
-      <div className="mb-10 flex justify-center rounded-full border border-nawalingo-dark/10 bg-nawalingo-dark/5 p-2 dark:border-nawalingo-light/10 dark:bg-nawalingo-light/5">
+      <div className="mt-6 mb-10 flex justify-center rounded-full border border-nawalingo-dark/10 bg-nawalingo-dark/5 p-2 dark:border-nawalingo-light/10 dark:bg-nawalingo-light/5">
         {/* Inner pill container */}
         <div className="relative">
           {/* Sliding background */}
@@ -86,6 +83,6 @@ export default function PricingSection() {
       <p className="text-sm tracking-wider text-nawalingo-gray-light dark:text-nawalingo-gray-dark">
         First session is backed by our satisfaction guarantee.
       </p>
-    </SectionWrapper>
+    </SectionHeading>
   );
 }

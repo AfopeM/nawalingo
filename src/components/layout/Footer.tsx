@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Logo from "@/navigation/Logo";
-import { Button } from "@/ui/Button";
+import { Button } from "@/common/Button";
 import { useTheme } from "@/providers/theme/theme-provider";
 import SocialLinks from "@/navigation/SocialLinks";
 

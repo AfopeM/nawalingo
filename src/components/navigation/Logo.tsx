@@ -14,7 +14,7 @@ export default function Logo({ className, isFooter = false }: LogoProps) {
     : "text-nawalingo-dark dark:text-nawalingo-light";
 
   return (
-    <Link href="/" className={`${baseStyles} ${className}`}>
+    <Link href="/main" className={`${baseStyles} ${className}`}>
       <span className="tracking-[-0.15em] text-nawalingo-primary">ነዋሊንጎ</span>
       <span className={textStyles}>nawalingo</span>
     </Link>

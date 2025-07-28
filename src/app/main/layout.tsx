@@ -3,9 +3,22 @@ import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Nawalingo | Learn Languages with Confidence",
+  title: "Nawalingo | Learn Languages Online with Certified Tutors",
   description:
-    "Nawalingo is a pay-per-lesson language learning platform offering live video sessions with qualified tutors.",
+    "Learn languages through live, one-on-one video lessons with professionally trained tutors. Pay per session and study at your own pace on Nawalingo.",
+  keywords: [
+    "Nawalingo",
+    "Learn Languages Online",
+    "Online Language Lessons",
+    "Certified Language Tutors",
+    "Flexible Language Learning",
+    "Pay Per Lesson Language Platform",
+  ],
+  openGraph: {
+    title: "Nawalingo | Learn Languages Online with Certified Tutors",
+    description:
+      "Learn languages through live, one-on-one video lessons with professionally trained tutors. Pay per session and study at your own pace on Nawalingo.",
+  },
 };
 
 export default function RootLayout({

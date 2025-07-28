@@ -35,6 +35,6 @@ export enum AuthMode {
 
 export const NAV_PATHS = {
   languages: "/main/languages",
-  "become a tutor": "/main/become-a-tutor",
+  "apply to tutor": "/main/apply-to-tutor",
   pricing: "/main/pricing",
 } as const;

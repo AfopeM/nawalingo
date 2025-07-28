@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { Separator } from "@/ui//Separator";
+import { Separator } from "@/common/Separator";
 // import { Check, Star } from "lucide-react";
-import { Button } from "@/ui/Button";
+import { Button } from "@/common/Button";
 import { FaCheck, FaStar } from "react-icons/fa";
 import { useTheme } from "@/providers/theme/theme-provider";
 
