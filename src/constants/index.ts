@@ -18,6 +18,14 @@ export const LANGUAGE_DIFFICULTY = [
   "beginner",
 ] as const;
 
+export const LANGUAGE_PROFICIENCY = [
+  "NATIVE",
+  "FLUENT",
+  "ADVANCED",
+  "INTERMEDIATE",
+  "BEGINNER",
+] as const;
+
 export const DAYS = [
   "Monday",
   "Tuesday",

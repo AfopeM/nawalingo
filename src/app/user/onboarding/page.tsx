@@ -7,6 +7,8 @@ import LanguageSelection from "@/components/forms/LanguageSelection";
 import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
 import TimezoneSelection from "@/components/forms/TimezoneSelection";
 import { useAuth } from "@/providers/auth/auth-provider";
+import { ProficiencyDropdown } from "@/components/forms/ProficiencyDropdown";
+import CountrySelection from "@/components/forms/CountrySelection";
 
 interface TimeSlot {
   day: string;
@@ -23,6 +25,8 @@ interface AuthError {
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("name");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [languageDetails, setLanguageDetails] = useState<
@@ -30,6 +34,7 @@ export default function OnboardingPage() {
   >([]);
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedTimezone, setSelectedTimezone] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -41,7 +46,7 @@ export default function OnboardingPage() {
     const checkOnboarding = async () => {
       // If no session, redirect to signin
       if (!session) {
-        router.replace("/signin");
+        router.replace("/auth/signin");
         return;
       }
 
@@ -57,7 +62,7 @@ export default function OnboardingPage() {
 
         // If onboarding is completed, redirect to dashboard
         if (data.onboardingCompleted) {
-          router.replace("/dashboard");
+          router.replace("/user/dashboard");
           return;
         }
 
@@ -77,8 +82,14 @@ export default function OnboardingPage() {
     setError(null);
     switch (currentStep) {
       case "name":
-        if (!userName.trim()) {
-          setError("Please enter your full name");
+        if (!firstName.trim() || !lastName.trim()) {
+          setError("Please enter your first and last name");
+          return;
+        }
+        if (!/^[A-Za-z0-9_]+$/.test(userName)) {
+          setError(
+            "Username must be one word (letters, numbers or underscore)",
+          );
           return;
         }
         setCurrentStep("languages");
@@ -133,10 +144,13 @@ export default function OnboardingPage() {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
+          firstName,
+          lastName,
           userName,
           selectedLanguages: languageDetails,
           selectedTimeSlots,
           selectedTimezone,
+          country: selectedCountry,
         }),
       });
 
@@ -146,7 +160,7 @@ export default function OnboardingPage() {
       }
 
       // Redirect to dashboard after successful submission
-      router.push("/dashboard");
+      router.push("/user/dashboard");
     } catch (error: unknown) {
       if (error && typeof error === "object" && "message" in error) {
         setError((error as AuthError).message);
@@ -183,16 +197,32 @@ export default function OnboardingPage() {
         {/* NAME */}
         {currentStep === "name" && (
           <>
-            <h1 className="mb-4 text-center text-2xl font-bold capitalize lg:text-3xl">
-              What&apos;s your name?
+            <h1 className="mb-4 text-center text-3xl font-bold capitalize lg:text-4xl">
+              Tell us about you
             </h1>
-            <div className="w-3/4">
+            <div className="flex w-full flex-col gap-4 md:w-3/4">
+              <input
+                type="text"
+                value={firstName}
+                autoComplete="given-name"
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="First name"
+                className="w-full rounded-sm p-4 outline-1 outline-black/10"
+              />
+              <input
+                type="text"
+                value={lastName}
+                autoComplete="family-name"
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Last name"
+                className="w-full rounded-sm p-4 outline-1 outline-black/10"
+              />
               <input
                 type="text"
                 value={userName}
-                autoComplete="name"
+                autoComplete="username"
                 onChange={(e) => setUserName(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="Choose a username (one word)"
                 className="w-full rounded-sm p-4 outline-1 outline-black/10"
               />
             </div>
@@ -226,36 +256,27 @@ export default function OnboardingPage() {
                 <h2 className="mt-8 mb-4 text-lg font-semibold capitalize">
                   language proficiency
                 </h2>
-                <div className="space-y-4">
+                <div className="flex flex-wrap justify-center gap-8">
                   {languageDetails.map((detail, idx) => (
                     <div
                       key={detail.language}
                       className="flex items-center gap-4"
                     >
-                      <span className="flex-1 capitalize">
+                      <span className="flex-1 font-bold capitalize">
                         {detail.language}
                       </span>
-
-                      <select
-                        value={detail.proficiency}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setLanguageDetails((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], proficiency: val };
-                            return copy;
-                          });
-                        }}
-                        className="flex-1 rounded border px-3 py-2"
-                      >
-                        <option value="" disabled>
-                          Select proficiency
-                        </option>
-                        <option value="native">Native</option>
-                        <option value="fluent">Fluent</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="beginner">Beginner</option>
-                      </select>
+                      <div className="flex-1">
+                        <ProficiencyDropdown
+                          value={detail.proficiency}
+                          onChange={(val) => {
+                            setLanguageDetails((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], proficiency: val };
+                              return copy;
+                            });
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -280,13 +301,23 @@ export default function OnboardingPage() {
         {/* TIMEZONE */}
         {currentStep === "timezone" && (
           <>
-            <h1 className="mb-4 text-2xl font-bold capitalize">
-              What&apos;s your timezone?
+            <h1 className="mb-4 text-center text-2xl font-bold capitalize">
+              What&apos;s your timezone and country?
             </h1>
-            <TimezoneSelection
-              selectedTimezone={selectedTimezone}
-              onChange={setSelectedTimezone}
-            />
+            <div className="mb-6 flex w-full flex-col items-center justify-center gap-6">
+              <div className="w-full md:w-1/2">
+                <TimezoneSelection
+                  selectedTimezone={selectedTimezone}
+                  onChange={setSelectedTimezone}
+                />
+              </div>
+              <div className="w-full md:w-1/2">
+                <CountrySelection
+                  selectedCountry={selectedCountry}
+                  onChange={setSelectedCountry}
+                />
+              </div>
+            </div>
           </>
         )}
 

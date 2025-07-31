@@ -136,7 +136,7 @@ function UserInfoDropdown() {
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem asChild>
-            <Link href="/user/dashboard/apply">Apply to Teach</Link>
+            <Link href="/user/apply">Apply to Teach</Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>

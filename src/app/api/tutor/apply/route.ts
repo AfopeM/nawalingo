@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { Role, RoleStatus } from "@prisma/client";
+import { RoleStatus, LanguageProficiency } from "@prisma/client";
 import { getAuthenticatedUser } from "@/lib/auth";
 
 export async function POST(request: Request) {
@@ -15,15 +15,18 @@ export async function POST(request: Request) {
     const { user } = authResult;
 
     const body = await request.json();
-    const { intro, languagesTaught, teachingExperience, country } = body;
+    const { intro, languagesTaught, teachingExperience } = body as {
+      intro: string;
+      languagesTaught: Array<{ language: string; proficiency: string }>;
+      teachingExperience: string;
+    };
 
     // Basic validation
     if (
       !intro ||
       !Array.isArray(languagesTaught) ||
       languagesTaught.length === 0 ||
-      !teachingExperience ||
-      !country
+      !teachingExperience
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -32,35 +35,84 @@ export async function POST(request: Request) {
     }
 
     await prisma.$transaction(async (tx) => {
-      // Upsert tutor profile
-      await tx.tutorProfile.upsert({
+      // ----------------------------------------------------------
+      // 1. Upsert tutor profile (no more languages_taught column)
+      // ----------------------------------------------------------
+      const tutorProfile = await tx.tutorProfile.upsert({
         where: { user_id: user.id },
         create: {
           user_id: user.id,
           intro,
-          languages_taught: languagesTaught,
           teaching_experience: teachingExperience,
-          country,
         },
         update: {
           intro,
-          languages_taught: languagesTaught,
           teaching_experience: teachingExperience,
-          country,
         },
       });
 
-      // Ensure the user has a tutor role (pending by default)
-      await tx.userRole.upsert({
+      // ----------------------------------------------------------
+      // 2. Upsert tutor languages (join table)
+      // ----------------------------------------------------------
+      const languageKeys = languagesTaught.map((l) => l.language);
+      const languages = await tx.language.findMany({
         where: {
-          user_id_role: {
+          OR: [{ code: { in: languageKeys } }, { name: { in: languageKeys } }],
+        },
+        select: { id: true, code: true, name: true },
+      });
+      const codeToId = new Map<string, string>();
+      languages.forEach((l) => {
+        codeToId.set(l.code, l.id);
+        codeToId.set(l.name, l.id);
+      });
+
+      await Promise.all(
+        languagesTaught.map(async (detail) => {
+          const languageId = codeToId.get(detail.language);
+          if (!languageId) return;
+          const proficiency =
+            detail.proficiency.toUpperCase() as keyof typeof LanguageProficiency;
+          await tx.tutorLanguage.upsert({
+            where: {
+              tutor_id_language_id: {
+                tutor_id: tutorProfile.id,
+                language_id: languageId,
+              },
+            },
+            create: {
+              tutor_id: tutorProfile.id,
+              language_id: languageId,
+              proficiency: proficiency as LanguageProficiency,
+              is_teaching: true,
+            },
+            update: {
+              proficiency: proficiency as LanguageProficiency,
+              is_teaching: true,
+            },
+          });
+        }),
+      );
+
+      // ----------------------------------------------------------
+      // 3. Ensure user has TUTOR role assignment (submitted/pending)
+      // ----------------------------------------------------------
+      const tutorRole = await tx.role.upsert({
+        where: { name: "TUTOR" },
+        create: { name: "TUTOR" },
+        update: {},
+      });
+
+      await tx.userRoleAssignment.upsert({
+        where: {
+          user_id_role_id: {
             user_id: user.id,
-            role: Role.TUTOR,
+            role_id: tutorRole.id,
           },
         },
         create: {
           user_id: user.id,
-          role: Role.TUTOR,
+          role_id: tutorRole.id,
           status: RoleStatus.SUBMITTED,
         },
         update: {

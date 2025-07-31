@@ -42,6 +42,13 @@ export default function ProtectedRoute({
     }
   }, [user, loading, router, requiredRoles]);
 
+  // Redirect out of restricted area after render to avoid setState-in-render errors
+  useEffect(() => {
+    if (roleCheck === "forbidden") {
+      router.replace("/user/dashboard");
+    }
+  }, [roleCheck, router]);
+
   if (loading || !user || roleCheck === "checking") {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -50,9 +57,7 @@ export default function ProtectedRoute({
     );
   }
   if (roleCheck === "forbidden") {
-    // Optionally redirect or show error
-    router.replace("/user/dashboard");
-    return null;
+    return null; // Redirect handled in effect below
   }
   return <>{children}</>;
 }

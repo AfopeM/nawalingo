@@ -13,31 +13,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Core User model
 model User {
-  id                String   @id @default(uuid()) @db.Uuid
-  email             String   @unique
-  username          String?
-  timezone          String? // IANA timezone string
+  id                String    @id @default(uuid()) @db.Uuid
+  email             String    @unique
+  username          String?   @unique // Add unique constraint
+  first_name        String? // Split name fields
+  last_name         String?
+  timezone          String?   @default("UTC") // Default timezone
   profile_image_url String?
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  email_verified    Boolean   @default(false) // Email verification
+  is_active         Boolean   @default(true) // Soft delete capability
+  country           String?
+  last_login_at     DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
 
-  roles          UserRole[]
+  roles          UserRoleAssignment[]
   studentProfile StudentProfile?
   tutorProfile   TutorProfile?
   availability   Availability[]
-  tutorRatings   TutorRating[]   @relation("TutorRatings")
-  studentRatings TutorRating[]   @relation("StudentRatings")
+  tutorRatings   TutorRating[]        @relation("TutorRatings")
+  studentRatings TutorRating[]        @relation("StudentRatings")
+  auditLogs      AuditLog[]
 }
 
-// Role management
-enum Role {
-  STUDENT
-  TUTOR
-  ADMIN
-}
-
+// Workflow status for user-role applications or suspensions
 enum RoleStatus {
   IN_PROGRESS
   SUBMITTED
@@ -46,27 +46,121 @@ enum RoleStatus {
   SUSPENDED
 }
 
-model UserRole {
+// =========================================================
+//   Role / Permission Architecture (table-driven)
+// =========================================================
+
+// Fine-grained permissions (enum for now)
+// Removed the AdminPermission enum and introduced a dynamic Permission model
+model Permission {
+  id              String                     @id @default(uuid()) @db.Uuid
+  name            String                     @unique
+  description     String?
+  rolePermissions RolePermissionAssignment[]
+  created_at      DateTime                   @default(now())
+  updated_at      DateTime                   @updatedAt
+}
+
+model Role {
+  id          String                     @id @default(uuid()) @db.Uuid
+  name        String                     @unique
+  permissions RolePermissionAssignment[]
+  userRoles   UserRoleAssignment[]
+  created_at  DateTime                   @default(now())
+  updated_at  DateTime                   @updatedAt
+}
+
+model RolePermissionAssignment {
+  id            String @id @default(uuid()) @db.Uuid
+  role_id       String @db.Uuid
+  permission_id String @db.Uuid
+
+  role       Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@unique([role_id, permission_id])
+}
+
+model UserRoleAssignment {
   id         String     @id @default(uuid()) @db.Uuid
   user_id    String     @db.Uuid
-  role       Role
+  role_id    String     @db.Uuid
   status     RoleStatus @default(IN_PROGRESS)
   created_at DateTime   @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [role_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_id, role])
+  @@unique([user_id, role_id])
 }
 
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String?  @db.Uuid
+  action      String // "CREATE_USER", "UPDATE_PROFILE", etc.
+  entity_type String // "User", "TutorProfile", etc.
+  entity_id   String?  @db.Uuid
+  old_values  Json?    @db.JsonB
+  new_values  Json?    @db.JsonB
+  ip_address  String?
+  user_agent  String?
+  created_at  DateTime @default(now())
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+}
+
+// =========================================================
+//   Language and Profile Management
+// =========================================================
+
+// Define the LanguageProficiency enum
+enum LanguageProficiency {
+  NATIVE
+  FLUENT
+  ADVANCED
+  INTERMEDIATE
+  BEGINNER
+}
+
+// Language model
+model Language {
+  id          String  @id @default(uuid()) @db.Uuid
+  code        String  @unique // ISO 639-1 code
+  name        String
+  native_name String
+  is_active   Boolean @default(true)
+
+  tutorLanguages   TutorLanguage[]
+  studentLanguages StudentLanguage[]
+}
+
+// StudentProfile model
 model StudentProfile {
   id                   String   @id @default(uuid()) @db.Uuid
   user_id              String   @unique @db.Uuid
-  target_languages     Json // [{"language": "Spanish", "proficiency": "native"}]
   onboarding_completed Boolean  @default(false)
   created_at           DateTime @default(now())
   updated_at           DateTime @updatedAt
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  studentLanguages StudentLanguage[]
+}
+
+// StudentLanguage join model for many-to-many relationship
+model StudentLanguage {
+  id          String              @id @default(uuid()) @db.Uuid
+  student_id  String              @db.Uuid
+  language_id String              @db.Uuid
+  proficiency LanguageProficiency
+
+  student  StudentProfile @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  language Language       @relation(fields: [language_id], references: [id], onDelete: Cascade)
+
+  @@unique([student_id, language_id])
 }
 
 // Tutor profile information
@@ -74,15 +168,32 @@ model TutorProfile {
   id                  String   @id @default(uuid()) @db.Uuid
   user_id             String   @unique @db.Uuid
   intro               String?
-  languages_taught    Json // [{"language": "Spanish", "proficiency": "native"}]
   teaching_experience String?
-  country             String?
   is_active           Boolean  @default(true)
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tutorLanguages TutorLanguage[]
 }
+
+// TutorLanguage join model for many-to-many relationship
+model TutorLanguage {
+  id          String              @id @default(uuid()) @db.Uuid
+  tutor_id    String              @db.Uuid
+  language_id String              @db.Uuid
+  proficiency LanguageProficiency
+  is_teaching Boolean             @default(true)
+
+  tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade) // Changed from User to TutorProfile
+  language Language     @relation(fields: [language_id], references: [id], onDelete: Cascade)
+
+  @@unique([tutor_id, language_id])
+}
+
+// =========================================================
+//   User Scheduling and Feedback
+// =========================================================
 
 // Availability type enum
 enum AvailabilityType {
@@ -98,30 +209,38 @@ model Availability {
   day_of_week  Int // 0-6 (Sunday-Saturday)
   start_minute Int // Minutes since midnight (540 = 9:00 AM)
   end_minute   Int // Minutes since midnight (660 = 11:00 AM)
-  timezone     String // IANA timezone string
+  timezone     String?          @default("UTC")
+  is_recurring Boolean          @default(true)
+  valid_from   DateTime? // For temporary availability
+  valid_until  DateTime?
+  is_active    Boolean          @default(true)
   created_at   DateTime         @default(now())
   updated_at   DateTime         @updatedAt
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@index([user_id, day_of_week])
-  @@index([day_of_week, start_minute, end_minute])
-  @@index([type, day_of_week, start_minute, end_minute])
+  @@index([user_id, type, is_active])
+  @@index([day_of_week, start_minute, end_minute, is_active])
 }
 
 // Tutor ratings and feedback
 model TutorRating {
-  id         String   @id @default(uuid()) @db.Uuid
-  tutor_id   String   @db.Uuid
-  student_id String   @db.Uuid
-  rating     Int // 1-5
-  feedback   String?
-  session_id String?  @db.Uuid // For future reference
-  created_at DateTime @default(now())
+  id               String   @id @default(uuid()) @db.Uuid
+  tutor_id         String   @db.Uuid
+  student_id       String   @db.Uuid
+  overall_rating   Int // 1-5
+  communication    Int? // 1-5
+  teaching_quality Int? // 1-5
+  punctuality      Int? // 1-5
+  feedback         String?
+  session_id       String?  @db.Uuid
+  is_verified      Boolean  @default(false) // Verified booking
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   tutor   User @relation("TutorRatings", fields: [tutor_id], references: [id], onDelete: Cascade)
   student User @relation("StudentRatings", fields: [student_id], references: [id], onDelete: Cascade)
 
-  @@index([tutor_id])
-  @@index([student_id])
+  @@unique([tutor_id, student_id, session_id]) // Prevent duplicate ratings
+  @@index([tutor_id, is_verified])
 }

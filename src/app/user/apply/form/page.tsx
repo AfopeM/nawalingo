@@ -6,11 +6,10 @@ import { Button } from "@/common/Button";
 import { Separator } from "@/common/Separator";
 import { useAuth } from "@/providers/auth/auth-provider";
 import ProtectedRoute from "@/providers/auth/protected-route";
-import CountrySelection from "@/components/forms/CountrySelection";
 import LanguageSelection from "@/components/forms/LanguageSelection";
 
 // Steps in the tutor application flow
-type ApplicationStep = "intro" | "languages" | "experience" | "country";
+type ApplicationStep = "intro" | "languages" | "experience";
 
 export default function TutorApplicationForm() {
   const [currentStep, setCurrentStep] = useState<ApplicationStep>("intro");
@@ -61,9 +60,6 @@ export default function TutorApplicationForm() {
           setError("Describe your teaching experience.");
           return;
         }
-        setCurrentStep("country");
-        break;
-      case "country":
         handleSubmit();
         break;
     }
@@ -89,7 +85,6 @@ export default function TutorApplicationForm() {
           intro,
           languagesTaught: languageDetails,
           teachingExperience,
-          country,
         }),
       });
 
@@ -109,12 +104,7 @@ export default function TutorApplicationForm() {
     }
   };
 
-  const steps: ApplicationStep[] = [
-    "intro",
-    "languages",
-    "experience",
-    "country",
-  ];
+  const steps: ApplicationStep[] = ["intro", "languages", "experience"];
 
   return (
     <ProtectedRoute>
@@ -225,19 +215,6 @@ export default function TutorApplicationForm() {
             </>
           )}
 
-          {/* COUNTRY */}
-          {currentStep === "country" && (
-            <>
-              <h1 className="mb-4 text-center text-2xl font-bold capitalize md:text-3xl">
-                Where are you based?
-              </h1>
-              <CountrySelection
-                selectedCountry={country}
-                onChange={setCountry}
-              />
-            </>
-          )}
-
           {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
           {/* NEXT/BACK BUTTON */}
@@ -262,7 +239,7 @@ export default function TutorApplicationForm() {
             >
               {loading
                 ? "Submitting..."
-                : currentStep === "country"
+                : currentStep === "experience"
                   ? "Submit"
                   : "Next"}
             </Button>

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth";
+import { RoleStatus } from "@prisma/client";
 
 // Return the list of approved roles for the authenticated user
 export async function GET(request: Request) {
@@ -14,15 +15,15 @@ export async function GET(request: Request) {
     }
     const { user } = authResult;
 
-    // Fetch roles that have been approved for this user
-    const roles = await prisma.userRole.findMany({
-      where: { user_id: user.id, status: "APPROVED" },
-      select: { role: true },
+    // Fetch roles that have been approved for this user via UserRoleAssignment
+    const assignments = await prisma.userRoleAssignment.findMany({
+      where: { user_id: user.id, status: RoleStatus.APPROVED },
+      include: { role: true },
     });
 
     // Return role strings in lowercase so the client can simply compare e.g. "tutor", "student".
     return NextResponse.json({
-      roles: roles.map((r: { role: string }) => r.role.toLowerCase()),
+      roles: assignments.map((a) => a.role.name.toLowerCase()),
     });
   } catch (error) {
     console.error("Error fetching user roles:", error);

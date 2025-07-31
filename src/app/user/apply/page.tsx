@@ -1,27 +1,22 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/common/Button";
 import ProtectedRoute from "@/providers/auth/protected-route";
 
 export default function ApplyToTeachPage() {
-  const router = useRouter();
-
   return (
     <ProtectedRoute>
       <div className="flex min-h-screen flex-col items-center justify-center gap-2 p-6">
-        <h1 className="text-2xl font-bold md:text-4xl">Apply to Teach</h1>
-        <p className="max-w-xl text-center text-muted-foreground">
+        <h1 className="text-4xl font-bold capitalize">Apply to Teach</h1>
+        <p className="max-w-xl px-8 text-center text-muted-foreground">
           Ready to share your knowledge with students around the world? Submit
           your tutor application and we&apos;ll be in touch once it&apos;s
           reviewed.
         </p>
-        <Button
-          className="mt-6 py-6 capitalize"
-          onClick={() => router.push("/apply/form")}
-        >
-          start application
-        </Button>
+        <Link href="/user/apply/form">
+          <Button className="mt-6 py-6 capitalize">start application</Button>
+        </Link>
       </div>
     </ProtectedRoute>
   );

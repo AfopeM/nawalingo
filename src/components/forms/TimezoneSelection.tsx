@@ -48,9 +48,9 @@ export default function TimezoneSelection({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-xs space-y-4">
       {showDetectedTimeZone && (
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center justify-center gap-2 text-sm">
           <span className="text-sm text-gray-500">Detected timezone:</span>
           <span className="font-medium">
             {formatTimezone(detectedTimezone)}

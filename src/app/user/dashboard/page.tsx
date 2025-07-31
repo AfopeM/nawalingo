@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserRoles } from "@/lib/roles";
 import { Button } from "@/common/Button";
+import Link from "next/link";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface OnboardingData {
@@ -119,12 +120,11 @@ export default function DashboardPage() {
             <p className="mb-4 text-lg text-gray-700">
               Please complete your onboarding to access the dashboard
             </p>
-            <Button
-              onClick={() => router.push("/onboarding")}
-              className="rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
-            >
-              Complete Onboarding
-            </Button>
+            <Link href="/user/onboarding">
+              <Button className="rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
+                Complete Onboarding
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
