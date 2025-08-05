@@ -1,4 +1,5 @@
 "use client";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 export { AuthMode };
 import { z } from "zod";
 import Link from "next/link";
@@ -24,10 +25,6 @@ interface AuthFormProps {
   mode: AuthMode;
 }
 
-interface AuthError {
-  message: string;
-}
-
 export default function AuthForm({ mode }: AuthFormProps) {
   const isSignup = mode === AuthMode.Signup;
   const router = useRouter();
@@ -41,6 +38,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   });
 
   const [formError, setFormError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // GOOGLE OAUTH SIGN IN / SIGN UP
   const handleGoogleAuth = async () => {
@@ -48,7 +46,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/v1/callback`,
         },
       });
     } catch (error) {
@@ -56,39 +54,61 @@ export default function AuthForm({ mode }: AuthFormProps) {
     }
   };
 
+  const getFriendlyErrorMessage = (error: unknown): string => {
+    if (error && typeof error === "object") {
+      const errObj = error as { message?: string; status?: number };
+      switch (errObj.status) {
+        case 400:
+          return "Invalid login credentials.";
+        case 401:
+          return "Unauthorized access.";
+        case 429:
+          return "Too many requests. Please try again later.";
+        default:
+          return errObj.message || "An unexpected error occurred.";
+      }
+    }
+    return "An unexpected error occurred.";
+  };
+
   const onSubmit = async (data: FormData) => {
     setFormError(null);
 
     try {
       if (isSignup) {
-        //SIGNUP
+        // SIGN UP
         const { data: authData, error: signUpError } =
           await supabase.auth.signUp({
             email: data.email,
             password: data.password,
           });
 
-        if (signUpError) throw signUpError;
-        if (!authData?.user) throw new Error("No user data returned");
+        if (signUpError) {
+          setFormError(getFriendlyErrorMessage(signUpError));
+          return;
+        }
+        if (!authData?.user) {
+          setFormError("No user data returned.");
+          return;
+        }
 
         router.push("/user/onboarding");
       } else {
-        //SIGNIN
-        const { error } = await supabase.auth.signInWithPassword({
+        // SIGN IN
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
         });
 
-        if (error) throw error;
+        if (signInError) {
+          setFormError(getFriendlyErrorMessage(signInError));
+          return;
+        }
 
         router.push("/");
       }
     } catch (error: unknown) {
-      if (error && typeof error === "object" && "message" in error) {
-        setFormError((error as AuthError).message);
-      } else {
-        setFormError("An unexpected error occurred");
-      }
+      setFormError(getFriendlyErrorMessage(error));
     }
   };
 
@@ -102,6 +122,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
     >
       {/* EMAIL INPUT */}
       <div>
+        <label htmlFor="email" className="sr-only">
+          Email
+        </label>
         <input
           id="email"
           type="email"
@@ -111,27 +134,54 @@ export default function AuthForm({ mode }: AuthFormProps) {
           className="w-full rounded-sm bg-nawalingo-dark/10 px-6 py-4 tracking-wide focus:outline-2 focus:outline-nawalingo-primary dark:bg-nawalingo-light/10 dark:focus:outline-nawalingo-primary"
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
+          <p
+            role="alert"
+            aria-live="assertive"
+            className="mt-1 text-sm text-red-500"
+          >
+            {errors.email.message}
+          </p>
         )}
       </div>
 
       {/* PASSWORD INPUT */}
-      <div>
+      <div className="relative">
+        <label htmlFor="password" className="sr-only">
+          Password
+        </label>
         <input
           id="password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           {...register("password")}
           autoComplete={isSignup ? "new-password" : "current-password"}
           className="w-full rounded-sm bg-nawalingo-dark/10 px-6 py-4 pr-14 tracking-wide focus:outline-2 focus:outline-nawalingo-primary dark:bg-nawalingo-light/10 dark:focus:outline-nawalingo-primary"
         />
+        <button
+          type="button"
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="absolute top-1/2 right-4 -translate-y-1/2 text-xl text-nawalingo-dark/50 dark:text-nawalingo-light/50"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+          {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+        </button>
         {errors.password && (
-          <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+          <p
+            role="alert"
+            aria-live="assertive"
+            className="mt-1 text-sm text-red-500"
+          >
+            {errors.password.message}
+          </p>
         )}
       </div>
 
       {/* ERROR MESSAGE */}
-      {formError && <p className="text-sm text-red-500">{formError}</p>}
+      {formError && (
+        <p role="alert" aria-live="assertive" className="text-sm text-red-500">
+          {formError}
+        </p>
+      )}
 
       {/* SUBMIT BUTTON */}
       <Button

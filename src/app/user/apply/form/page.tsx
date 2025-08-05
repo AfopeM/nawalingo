@@ -19,7 +19,6 @@ export default function TutorApplicationForm() {
     { language: string; proficiency: string }[]
   >([]);
   const [teachingExperience, setTeachingExperience] = useState("");
-  const [country, setCountry] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

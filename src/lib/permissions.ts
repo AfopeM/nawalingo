@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { RoleStatus } from "@prisma/client";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type AdminPermission =
   | "MANAGE_ADMINS"
   | "MANAGE_TUTOR_APPLICATIONS"

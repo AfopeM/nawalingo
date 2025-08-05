@@ -30,13 +30,13 @@ export default function AuthCallbackPage() {
         const { onboardingCompleted } = await res.json();
 
         if (onboardingCompleted) {
-          router.replace("/user/dashboard");
+          router.replace("/user/student/dashboard");
         } else {
           router.replace("/user/onboarding");
         }
       } catch (error) {
         console.error("Redirect error:", error);
-        router.replace("/user/dashboard");
+        router.replace("/user/student/dashboard");
       }
     };
 

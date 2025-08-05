@@ -12,7 +12,6 @@ import {
   SidebarInset,
   SidebarSeparator,
 } from "@/components/layout/Sidebar";
-import ProtectedRoute from "@/providers/auth/protected-route";
 import Logo from "@/components/navigation/Logo";
 import Link from "next/link";
 import { useAuth } from "@/providers/auth/auth-provider";
@@ -26,59 +25,56 @@ import {
 } from "@/ui/DropdownMenu";
 import { UserRound } from "lucide-react";
 import { hasRole } from "@/lib/roles";
+import { Button } from "@/common/Button";
 
-export default function TutorDashboardLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+interface DashboardProps {
+  children: React.ReactNode;
+}
+
+export default function Dashboard({ children }: DashboardProps) {
   return (
-    <ProtectedRoute requiredRoles={["tutor"]}>
-      <SidebarProvider className="min-h-svh w-full">
-        <Sidebar collapsible="icon" className="border-r">
-          {/* Sidebar header with logo */}
-          <SidebarHeader>
-            <Logo className="mx-auto" />
-          </SidebarHeader>
+    <SidebarProvider className="min-h-svh w-full">
+      <Sidebar collapsible="offcanvas" className="border-r">
+        {/* Sidebar header with logo */}
+        <SidebarHeader className="flex items-center justify-center px-4">
+          <Logo className="py-2" />
           <SidebarSeparator />
+        </SidebarHeader>
 
-          {/* Sidebar navigation content */}
-          <SidebarContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={false}>
-                  <Link
-                    href="/user/tutor/profile"
-                    className="flex w-full items-center gap-2"
-                  >
-                    <UserRound className="size-4" />
-                    <span>Teacher Profile</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
+        {/* Sidebar navigation content */}
+        <SidebarContent className="px-4">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={false}>
+                <Link
+                  href="/user/dashboard/profile"
+                  className="flex w-full items-center gap-2"
+                >
+                  <UserRound className="size-4" />
+                  <span>Profile</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
 
-          {/* Sidebar footer with user details */}
-          <SidebarFooter>
-            <UserInfoDropdownTutor />
-          </SidebarFooter>
-        </Sidebar>
+        {/* Sidebar footer with user details */}
+        <SidebarFooter className="px-4">
+          <UserInfoDropdown />
+        </SidebarFooter>
+      </Sidebar>
 
-        {/* Main content area */}
-        <SidebarInset className="p-4">{children}</SidebarInset>
-      </SidebarProvider>
-    </ProtectedRoute>
+      {/* Main content area */}
+      <SidebarInset className="px-8">{children}</SidebarInset>
+    </SidebarProvider>
   );
 }
 
-// Dropdown with switch back to student profile
-function UserInfoDropdownTutor() {
-  const { user } = useAuth();
+//  Client component to display current user info and dropdown
+function UserInfoDropdown() {
+  const { user, signOut } = useAuth();
   const [fullName, setFullName] = useState<string>("");
   const [isTutor, setIsTutor] = useState(false);
-
-  useEffect(() => {
-    hasRole("tutor").then(setIsTutor);
-  }, []);
 
   useEffect(() => {
     const fetchName = async () => {
@@ -92,6 +88,11 @@ function UserInfoDropdownTutor() {
     };
     fetchName();
   }, [user]);
+
+  // Determine if the current user already has the tutor role
+  useEffect(() => {
+    hasRole("tutor").then(setIsTutor);
+  }, []);
 
   if (!user) return null;
 
@@ -124,15 +125,24 @@ function UserInfoDropdownTutor() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
         <DropdownMenuItem asChild>
-          <Link href="/user/dashboard/tutor/profile">Teacher Profile</Link>
+          <Link href="/user/dashboard/profile">Profile</Link>
         </DropdownMenuItem>
-        {isTutor && (
+        {isTutor ? (
           <DropdownMenuItem asChild>
-            <Link href="/user/dashboard/profile">
-              Switch to Student Profile
+            <Link href="/user/dashboard/tutor/profile">
+              Switch to Teacher Profile
             </Link>
           </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem asChild>
+            <Link href="/user/apply">Apply to Teach</Link>
+          </DropdownMenuItem>
         )}
+        <DropdownMenuItem asChild>
+          <Button className="w-full" onClick={signOut}>
+            Log Out
+          </Button>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
