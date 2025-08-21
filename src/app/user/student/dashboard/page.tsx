@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getUserRoles } from "@/lib/roles";
-import { Button } from "@/common/Button";
 import Link from "next/link";
+import { Button } from "@/common/Button";
+import { getUserRoles } from "@/lib/roles";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+// import ThemeToggle from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/providers/auth/auth-provider";
+// import RoleDropdownMenu from "@/components/ui/RoleDropdownMenu";
+import UserHeading from "@/components/user/UserHeading";
 
 interface OnboardingData {
   onboardingCompleted: boolean;
@@ -13,8 +16,8 @@ interface OnboardingData {
 }
 
 export default function DashboardPage() {
-  const [roles, setRoles] = useState<string[]>([]);
-  const [activeRole, setActiveRole] = useState<string | null>(null);
+  // const [roles, setRoles] = useState<string[]>([]);
+  // const [activeRole, setActiveRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(
     null,
@@ -88,10 +91,10 @@ export default function DashboardPage() {
     checkOnboardingAndFetchRoles();
   }, [router, session]);
 
-  const handleSwitch = (role: string) => {
-    setActiveRole(role);
-    if (typeof window !== "undefined") localStorage.setItem("activeRole", role);
-  };
+  // const handleSwitch = (role: string) => {
+  //   setActiveRole(role);
+  //   if (typeof window !== "undefined") localStorage.setItem("activeRole", role);
+  // };
 
   if (loading) {
     return (
@@ -132,36 +135,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto mt-16 max-w-md rounded border bg-white p-8 shadow">
-      <h1 className="mb-4 text-2xl font-bold">Dashboard</h1>
-      {roles.length > 1 && (
-        <div className="mb-6">
-          <label className="mb-2 block font-semibold">Switch Role:</label>
-          <div className="flex gap-2">
-            {roles.map((role) => (
-              <button
-                key={role}
-                className={`rounded border px-4 py-2 ${
-                  activeRole === role ? "bg-blue-600 text-white" : "bg-gray-100"
-                }`}
-                onClick={() => handleSwitch(role)}
-                disabled={activeRole === role}
-              >
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </button>
-            ))}
-          </div>
+    <>
+      <section className="min-h-screen">
+        <UserHeading />
+        <div className="flex flex-grow bg-blue-400">
+          <p>Welcome to your dashboard! More features coming soon.</p>
         </div>
-      )}
-      <p className="mb-2">
-        Active Role:{" "}
-        <span className="font-semibold">
-          {activeRole
-            ? activeRole.charAt(0).toUpperCase() + activeRole.slice(1)
-            : "None"}
-        </span>
-      </p>
-      <p>Welcome to your dashboard! More features coming soon.</p>
-    </div>
+      </section>
+    </>
   );
 }

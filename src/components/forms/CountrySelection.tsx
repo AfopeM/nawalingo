@@ -22,11 +22,11 @@ export default function CountrySelection({
 }: CountrySelectionProps) {
   return (
     <DropdownMenu>
-      <div className="flex justify-center">
+      <div className="flex w-full justify-center">
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="w-full max-w-xs justify-between py-6"
+            className="w-full justify-between gap-4 py-6"
           >
             {selectedCountry ? selectedCountry : "select country"}
             <FaSortDown className="mb-1.5" />

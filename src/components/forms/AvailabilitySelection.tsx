@@ -80,7 +80,7 @@ export default function AvailabilitySelection({
       </div>
 
       {/* TIME SLOT SELECTION */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
         {TIME_SLOTS.map(({ start, end, displayStart, displayEnd }) => (
           <button
             key={`${start}-${end}`} // Use the original 24-hour format for the key

@@ -1,11 +1,17 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
+  showText?: boolean;
   isFooter?: boolean;
 }
 
-export default function Logo({ className, isFooter = false }: LogoProps) {
+export default function Logo({
+  className,
+  isFooter = false,
+  showText = true,
+}: LogoProps) {
   const baseStyles =
     "flex items-center justify-center gap-x-2 font-black text-xl tracking-tighter uppercase inline-flex";
 
@@ -14,9 +20,9 @@ export default function Logo({ className, isFooter = false }: LogoProps) {
     : "text-nawalingo-dark dark:text-nawalingo-light";
 
   return (
-    <Link href="/main" className={`${baseStyles} ${className}`}>
+    <Link href="/main" className={cn(baseStyles, className)}>
       <span className="tracking-[-0.15em] text-nawalingo-primary">ነዋሊንጎ</span>
-      <span className={textStyles}>nawalingo</span>
+      {showText && <span className={textStyles}>nawalingo</span>}
     </Link>
   );
 }

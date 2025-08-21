@@ -21,7 +21,7 @@ export function ProficiencyDropdown({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="flex w-full max-w-xs justify-between py-6"
+          className="flex w-full justify-between py-6 capitalize"
         >
           {value
             ? value.charAt(0) + value.slice(1).toLowerCase()

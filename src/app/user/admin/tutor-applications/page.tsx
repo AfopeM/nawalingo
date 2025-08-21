@@ -11,10 +11,10 @@ interface TutorApplication {
     first_name: string | null;
     last_name: string | null;
     email: string | null;
+    country: string | null;
     tutorProfile: {
       intro: string | null;
       teaching_experience: string | null;
-      country: string | null;
       tutorLanguages?: {
         language: {
           name: string;
@@ -24,7 +24,7 @@ interface TutorApplication {
   };
 }
 
-export default function TutorApplicationsAdminPage() {
+export default function TutorApplicationsPage() {
   const { session } = useAuth();
   const [applications, setApplications] = useState<TutorApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,9 +109,7 @@ export default function TutorApplicationsAdminPage() {
                       {app.user.first_name} {app.user.last_name}
                     </td>
                     <td className="border px-4 py-2">{app.user.email}</td>
-                    <td className="border px-4 py-2">
-                      {app.user.tutorProfile?.country}
-                    </td>
+                    <td className="border px-4 py-2">{app.user.country}</td>
                     <td className="space-x-2 border px-4 py-2">
                       <Button
                         variant="ghost"
@@ -158,8 +156,7 @@ export default function TutorApplicationsAdminPage() {
                           {app.user.tutorProfile?.teaching_experience || "N/A"}
                         </p>
                         <p>
-                          <strong>Country:</strong>{" "}
-                          {app.user.tutorProfile?.country || "N/A"}
+                          <strong>Country:</strong> {app.user.country || "N/A"}
                         </p>
                       </td>
                     </tr>

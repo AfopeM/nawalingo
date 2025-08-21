@@ -35,11 +35,11 @@ export async function GET(request: Request) {
             first_name: true,
             last_name: true,
             email: true,
+            country: true,
             tutorProfile: {
               select: {
                 intro: true,
                 teaching_experience: true,
-                country: true,
                 tutorLanguages: {
                   where: { is_teaching: true },
                   select: {

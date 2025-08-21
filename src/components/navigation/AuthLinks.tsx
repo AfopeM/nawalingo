@@ -44,7 +44,7 @@ export default function AuthLinks({ isMobile = false }: AuthLinksProps) {
     return (
       <>
         {/* DASHBOARD BUTTON */}
-        <Link href="/user/dashboard" passHref>
+        <Link href="/user/student/dashboard" passHref>
           <Button variant="outline" className={getButtonClasses(true)}>
             Dashboard
           </Button>

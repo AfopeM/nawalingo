@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+
 // Note: After Prisma generation, replace this fallback union with the enum from `@prisma/client`.
+
 type AdminPermission =
   | "MANAGE_ADMINS"
   | "MANAGE_TUTOR_APPLICATIONS"
@@ -12,14 +14,17 @@ const ALL_PERMISSIONS: AdminPermission[] = [
   "MANAGE_PAYMENTS",
   "MANAGE_USERS",
 ];
+
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/auth";
 import { hasAdminPermission, listAdminPermissions } from "@/lib/permissions";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } },
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const params = await context.params;
+
   const authResult = await getAuthenticatedUser(request);
   if ("error" in authResult) {
     return NextResponse.json(
@@ -42,8 +47,10 @@ export async function GET(
 // Update admin permissions for a user
 export async function PUT(
   request: Request,
-  { params }: { params: { userId: string } },
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const params = await context.params;
+
   const authResult = await getAuthenticatedUser(request);
   if ("error" in authResult) {
     return NextResponse.json(

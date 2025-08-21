@@ -48,7 +48,7 @@ export default function TimezoneSelection({
   };
 
   return (
-    <div className="mx-auto max-w-xs space-y-4">
+    <div className="w-full space-y-4">
       {showDetectedTimeZone && (
         <div className="flex items-center justify-center gap-2 text-sm">
           <span className="text-sm text-gray-500">Detected timezone:</span>
@@ -60,7 +60,10 @@ export default function TimezoneSelection({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-full justify-around py-6">
+          <Button
+            variant="outline"
+            className="w-full justify-between gap-8 py-6"
+          >
             {selectedTimezone
               ? formatTimezone(selectedTimezone)
               : "Select timezone"}{" "}

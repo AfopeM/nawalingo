@@ -1,19 +1,3 @@
-"use client";
-
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarSeparator,
-} from "@/components/layout/Sidebar";
-import Logo from "@/components/navigation/Logo";
-import Link from "next/link";
 import { useAuth } from "@/providers/auth/auth-provider";
 import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
@@ -23,55 +7,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/ui/DropdownMenu";
-import { UserRound } from "lucide-react";
 import { hasRole } from "@/lib/roles";
+import Link from "next/link";
 import { Button } from "@/common/Button";
 
-interface DashboardProps {
-  children: React.ReactNode;
-}
-
-export default function Dashboard({ children }: DashboardProps) {
-  return (
-    <SidebarProvider className="min-h-svh w-full">
-      <Sidebar collapsible="offcanvas" className="border-r">
-        {/* Sidebar header with logo */}
-        <SidebarHeader className="flex items-center justify-center px-4">
-          <Logo className="py-2" />
-          <SidebarSeparator />
-        </SidebarHeader>
-
-        {/* Sidebar navigation content */}
-        <SidebarContent className="px-4">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={false}>
-                <Link
-                  href="/user/dashboard/profile"
-                  className="flex w-full items-center gap-2"
-                >
-                  <UserRound className="size-4" />
-                  <span>Profile</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-
-        {/* Sidebar footer with user details */}
-        <SidebarFooter className="px-4">
-          <UserInfoDropdown />
-        </SidebarFooter>
-      </Sidebar>
-
-      {/* Main content area */}
-      <SidebarInset className="px-8">{children}</SidebarInset>
-    </SidebarProvider>
-  );
-}
-
-//  Client component to display current user info and dropdown
-function UserInfoDropdown() {
+export default function UserInfoMenu() {
   const { user, signOut } = useAuth();
   const [fullName, setFullName] = useState<string>("");
   const [isTutor, setIsTutor] = useState(false);

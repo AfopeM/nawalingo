@@ -43,3 +43,6 @@ next-env.d.ts
 /src/generated/prisma
 
 SUPABASE_SEEDING_README.md
+
+# QA Checklists
+/qa_checklists/
