@@ -1,3 +1,5 @@
+"use client";
+
 // hooks/useActiveRole.ts
 import { useState, useEffect } from "react";
 import { getUserRoles } from "@/lib/roles";
