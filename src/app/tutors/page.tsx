@@ -4,7 +4,17 @@
 // import { Pagination } from "@/components/ui/Pagination";
 import { Suspense } from "react";
 
-async function fetchTutors(search: string): Promise<any> {
+interface TutorResult {
+  id: string;
+  name?: string | null;
+}
+
+async function fetchTutors(search: string): Promise<{
+  page: number;
+  pageSize: number;
+  total: number;
+  results: TutorResult[];
+}> {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/tutors?${search}`,
     {
@@ -40,7 +50,7 @@ export default async function TutorsPage({
             <div>
               <p>Found {data.results.length} tutors</p>
               {/* TODO: TutorCard component needs to be created */}
-              {data.results.map((t: any) => (
+              {data.results.map((t: TutorResult) => (
                 <div key={t.id} className="mb-4 rounded border p-4">
                   <h3>{t.name || "Tutor"}</h3>
                   <p>Tutor details coming soon...</p>

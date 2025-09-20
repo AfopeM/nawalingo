@@ -1,7 +1,21 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { DateTime } from "luxon";
-import { AvailabilityType } from "@prisma/client";
+
+// Availability record coming from the API
+interface Availability {
+  day_of_week: number;
+  start_minute: number;
+  end_minute: number;
+  timezone?: string | null;
+}
+
+// Language info returned for this tutor
+interface Language {
+  id: string;
+  name: string;
+  proficiency: string;
+}
 
 async function fetchTutor(id: string) {
   const res = await fetch(
@@ -26,7 +40,7 @@ export default async function TutorProfilePage({
   const fullName = `${tutor.firstName ?? ""} ${tutor.lastName ?? ""}`.trim();
 
   function formatAvailability() {
-    return tutor.availability.map((a: any) => {
+    return tutor.availability.map((a: Availability) => {
       const day = DateTime.utc()
         .set({ weekday: a.day_of_week + 1 })
         .toFormat("cccc");
@@ -87,7 +101,7 @@ export default async function TutorProfilePage({
         <section>
           <h2 className="mb-2 text-2xl font-semibold">Languages taught</h2>
           <ul className="flex flex-wrap gap-2">
-            {tutor.languages.map((l: any) => (
+            {tutor.languages.map((l: Language) => (
               <li
                 key={l.id}
                 className="rounded bg-gray-200 px-2 py-0.5 text-sm dark:bg-gray-700/40"
@@ -121,6 +135,3 @@ export default async function TutorProfilePage({
     </main>
   );
 }
-
-
-

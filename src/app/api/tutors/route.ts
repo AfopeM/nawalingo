@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { DateTime } from "luxon";
-import { AvailabilityType, LanguageProficiency } from "@prisma/client";
+import { AvailabilityType, LanguageProficiency, Prisma } from "@prisma/client";
 
 /**
  * /api/tutors
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     // -------------------------------
     // Build dynamic Prisma filters
     // -------------------------------
-    const whereTutorProfile: any = {
+    const whereTutorProfile: Prisma.TutorProfileWhereInput = {
       is_active: true,
       user: {
         is_active: true,
@@ -148,7 +148,7 @@ export async function GET(request: Request) {
     // Rating aggregation
     // ----------------------------------
     const tutorIds = tutors.map((t) => t.user_id);
-    let ratingsMap: Record<string, number> = {};
+    const ratingsMap: Record<string, number> = {};
     const minRating = parseInt(params.get("minRating") ?? "0", 10);
     const maxRating = parseInt(params.get("maxRating") ?? "5", 10);
 
