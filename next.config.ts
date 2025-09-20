@@ -30,17 +30,19 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-  // Add this ↓ so Turbopack knows to ignore the same paths
-  turbo: {
-    watchOptions: {
-      ignored: [
-        "**/node_modules/**",
-        "**/.next/**",
-        "**/.git/**",
-        "**/coverage/**",
-        "**/.turbo/**",
-        "**/prisma/migrations/**",
-      ],
+  // Turbopack configuration moved to experimental in Next.js 15
+  experimental: {
+    turbo: {
+      watchOptions: {
+        ignored: [
+          "**/node_modules/**",
+          "**/.next/**",
+          "**/.git/**",
+          "**/coverage/**",
+          "**/.turbo/**",
+          "**/prisma/migrations/**",
+        ],
+      },
     },
   },
 };

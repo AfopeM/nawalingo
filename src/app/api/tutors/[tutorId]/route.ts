@@ -5,8 +5,9 @@ import { AvailabilityType } from "@prisma/client";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { tutorId: string } },
+  context: { params: Promise<{ tutorId: string }> },
 ) {
+  const params = await context.params;
   try {
     const tutorId = params.tutorId;
     const tutorProfile = await prisma.tutorProfile.findUnique({
@@ -94,6 +95,3 @@ export async function GET(
     );
   }
 }
-
-
-

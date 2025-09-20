@@ -6,8 +6,9 @@ import { RoleStatus } from "@prisma/client";
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } },
+  context: { params: Promise<{ userId: string }> },
 ) {
+  const params = await context.params;
   const authResult = await getAuthenticatedUser(request);
   if ("error" in authResult) {
     return NextResponse.json(
