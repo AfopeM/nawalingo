@@ -1,6 +1,7 @@
-import { TutorCard, TutorCardData } from "@/components/tutor/TutorCard";
-import { TutorFilters } from "@/components/tutor/TutorFilters";
-import { Pagination } from "@/components/ui/Pagination";
+// TODO: These components need to be created
+// import { TutorCard, TutorCardData } from "@/components/tutor/TutorCard";
+// import { TutorFilters } from "@/components/tutor/TutorFilters";
+// import { Pagination } from "@/components/ui/Pagination";
 import { Suspense } from "react";
 
 async function fetchTutors(search: string): Promise<any> {
@@ -29,27 +30,32 @@ export default async function TutorsPage({
       <h1 className="text-3xl font-bold">Find your tutor</h1>
       <div className="grid gap-6 md:grid-cols-[240px_1fr]">
         <Suspense fallback={<p>Loading filters…</p>}>
-          <TutorFilters />
+          {/* TODO: TutorFilters component needs to be created */}
+          <div>Filters coming soon...</div>
         </Suspense>
         <div className="space-y-6">
           {data.results.length === 0 ? (
             <p>No tutors found for selected criteria.</p>
           ) : (
-            data.results.map((t: TutorCardData) => (
-              <TutorCard key={t.id} data={t} />
-            ))
+            <div>
+              <p>Found {data.results.length} tutors</p>
+              {/* TODO: TutorCard component needs to be created */}
+              {data.results.map((t: any) => (
+                <div key={t.id} className="mb-4 rounded border p-4">
+                  <h3>{t.name || "Tutor"}</h3>
+                  <p>Tutor details coming soon...</p>
+                </div>
+              ))}
+            </div>
           )}
-          <Pagination
-            current={data.page}
-            total={data.total}
-            pageSize={data.pageSize}
-            linkBuilder={(p) => `/tutors?page=${p}&${search}`}
-          />
+          {/* TODO: Pagination component needs to be created */}
+          <div>
+            <p>
+              Page {data.page} of {Math.ceil(data.total / data.pageSize)}
+            </p>
+          </div>
         </div>
       </div>
     </main>
   );
 }
-
-
-

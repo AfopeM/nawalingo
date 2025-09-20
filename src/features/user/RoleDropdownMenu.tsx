@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "@/ui/DropdownMenu";
+} from "@/components/molecules/DropdownMenu";
 import { useActiveRole } from "@/hooks/useActiveRole";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";

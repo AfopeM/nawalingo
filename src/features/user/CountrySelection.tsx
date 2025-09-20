@@ -3,7 +3,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/ui/DropdownMenu";
+} from "@/components/molecules/DropdownMenu";
 import { FaSortDown } from "react-icons/fa6";
 import { Button } from "@/components/atoms/Button";
 import { countries as COUNTRIES_MAP } from "countries-list";

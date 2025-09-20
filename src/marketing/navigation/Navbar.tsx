@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import Logo from "@/navigation/Logo";
-import NavLinks from "@/navigation/NavLinks";
-import AuthLinks from "@/components/navigation/AuthLinks";
-import MobileMenu from "@/layout/MobileMenu";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import Logo from "@/components/atoms/Logo";
+import NavLinks from "@/marketing/navigation/NavLinks";
+import AuthLinks from "@/marketing/navigation/AuthLinks";
+import MobileMenu from "@/marketing/navigation/MobileMenu";
+import ThemeToggle from "@/components/organisms/ThemeToggle";
 
 export default function Navbar() {
   // Track whether the mobile menu is currently open

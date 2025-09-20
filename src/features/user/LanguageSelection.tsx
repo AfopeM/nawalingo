@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@/ui/DropdownMenu";
+} from "@/components/molecules/DropdownMenu";
 
 interface LanguageSelectionProps {
   selectedLanguages: string[];

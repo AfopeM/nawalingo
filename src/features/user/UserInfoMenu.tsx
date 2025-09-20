@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/ui/DropdownMenu";
+} from "@/components/molecules/DropdownMenu";
 import { hasRole } from "@/lib/roles";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";

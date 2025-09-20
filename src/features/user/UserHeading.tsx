@@ -1,6 +1,6 @@
 import { useActiveRole } from "@/hooks/useActiveRole";
-import ThemeToggle from "@/ui/ThemeToggle";
-import RoleDropdownMenu from "@/components/ui/RoleDropdownMenu";
+import ThemeToggle from "@/components/organisms/ThemeToggle";
+import RoleDropdownMenu from "@/features/user/RoleDropdownMenu";
 
 export default function UserHeading() {
   const [activeRole] = useActiveRole();

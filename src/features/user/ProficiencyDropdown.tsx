@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "@/ui/DropdownMenu";
+} from "@/components/molecules/DropdownMenu";
 import { Button } from "@/components/atoms/Button";
 import { LANGUAGE_PROFICIENCY } from "@/constants";
 import { FaSortDown } from "react-icons/fa6";
