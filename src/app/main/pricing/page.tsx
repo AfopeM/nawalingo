@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import SectionWrapper from "@/layout/SectionWrapper";
-import HeroSection from "@/layout/HeroSection";
-import { Tagline, Heading, Description } from "@/common/Typography";
-import PricingSection from "@/components/section/PricingSection";
-import { Separator } from "@/common/Separator";
+import {
+  HeroSection,
+  SectionWrapper,
+  PricingSection,
+  Tagline,
+  Heading,
+  Description,
+  SectionHeading,
+} from "@/marketing";
+import { Separator } from "@/components/atoms";
 import { FaCheck } from "react-icons/fa";
-import SectionHeading from "@/common/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Nawalingo Pricing | Affordable Language Learning Plans",

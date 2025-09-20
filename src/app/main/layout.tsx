@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "@/layout/Navbar";
-import Footer from "@/layout/Footer";
+import { Navbar, Footer } from "@/marketing/navigation";
 
 export const metadata: Metadata = {
   title: "Nawalingo | Learn Languages Online with Certified Tutors",

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { AuthMode } from "@/constants";
-import AuthForm from "@/components/forms/AuthForm";
-import SectionHeading from "@/common/SectionHeading";
-import { Heading, Tagline, Description } from "@/common/Typography";
+import { AuthForm } from "@/features/auth";
+import { Heading, Tagline, Description, SectionHeading } from "@/marketing";
 
 export const metadata: Metadata = {
   title: "Create Your Nawalingo Account | Start Learning Languages Today",

@@ -1,13 +1,16 @@
+import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Button } from "@/common/Button";
-import SectionWrapper from "@/layout/SectionWrapper";
-import { Separator } from "@/common/Separator";
-import React from "react";
-import HeroSection from "@/layout/HeroSection";
-import CTASection from "@/components/section/CTASection";
+import { Button, Separator } from "@/components/atoms";
 import { languages as languageData } from "@/constants/languages";
-import { Tagline, Heading, Description } from "@/common/Typography";
+import {
+  SectionWrapper,
+  Tagline,
+  Heading,
+  Description,
+  CTASection,
+  HeroSection,
+} from "@/marketing";
 
 export const metadata: Metadata = {
   title: "Learn African Languages Online | Nawalingo Language Library",

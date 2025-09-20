@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
-import Logo from "@/navigation/Logo";
-import { Button } from "@/common/Button";
+import { Button, Logo } from "@/components/atoms";
 import { useTheme } from "@/providers/theme/theme-provider";
-import SocialLinks from "@/navigation/SocialLinks";
+import { SocialLinks } from "@/marketing/navigation";
 
 export default function Footer() {
   const { theme } = useTheme();

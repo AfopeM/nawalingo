@@ -1,18 +1,19 @@
 "use client";
 
-import Logo from "@/navigation/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import { Button } from "@/common/Button";
+import Image from "next/image";
+import { Logo, Button } from "@/components/atoms";
+import { useActiveRole } from "@/hooks/useActiveRole";
+import { ThemeToggle } from "@/components/organisms";
 import { useState, useEffect } from "react";
-import RoleDropdownMenu from "@/ui/RoleDropdownMenu";
+import {
+  RoleDropdownMenu,
+  RoleMenuItems,
+  ProfileMenuItems,
+} from "@/features/user";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useAuth } from "@/providers/auth/auth-provider";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { Menu, X, ChevronDown, User } from "lucide-react";
-import RoleMenuItems from "@/components/user/RoleMenuItems";
-import ProfileMenuItems from "@/components/user/ProfileMenuItems";
-import { useActiveRole } from "@/hooks/useActiveRole";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -99,7 +100,7 @@ export default function Sidebar({ children, role = "student" }: SidebarProps) {
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   setIsShowMenu(!isShowMenu);
                   setIsShowProfileMenu(false);
@@ -149,7 +150,7 @@ export default function Sidebar({ children, role = "student" }: SidebarProps) {
               <div className="relative">
                 <Button
                   variant="ghost"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation();
                     setIsShowProfileMenu(!isShowProfileMenu);
                     setIsShowMenu(false);

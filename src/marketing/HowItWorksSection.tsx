@@ -1,10 +1,9 @@
 import { SlCalender } from "react-icons/sl";
 import { HiTrendingUp } from "react-icons/hi";
-import SectionHeading from "@/common/SectionHeading";
 import { LuUserRoundSearch } from "react-icons/lu";
 import { TbLanguageHiragana } from "react-icons/tb";
 import { steps as stepData } from "@/constants/steps";
-import { Tagline, Heading, Description } from "@/common/Typography";
+import { SectionHeading, Tagline, Heading, Description } from "@/marketing";
 
 const icons = [TbLanguageHiragana, LuUserRoundSearch, SlCalender, HiTrendingUp];
 

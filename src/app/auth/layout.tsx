@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Button } from "@/common/Button";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import { Button } from "@/components/atoms";
 import { FaArrowLeft } from "react-icons/fa";
+import ThemeToggle from "@/components/organisms/ThemeToggle";
 
 export default function AuthLayout({
   children,

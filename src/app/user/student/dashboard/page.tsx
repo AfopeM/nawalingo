@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms";
 import { getUserRoles } from "@/lib/roles";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import ThemeToggle from "@/components/ui/ThemeToggle";
 import { useAuth } from "@/providers/auth/auth-provider";
-// import RoleDropdownMenu from "@/components/ui/RoleDropdownMenu";
-import UserHeading from "@/components/user/UserHeading";
+import { UserHeading } from "@/features/user";
 
 interface OnboardingData {
   onboardingCompleted: boolean;
@@ -16,8 +14,6 @@ interface OnboardingData {
 }
 
 export default function DashboardPage() {
-  // const [roles, setRoles] = useState<string[]>([]);
-  // const [activeRole, setActiveRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(
     null,
@@ -90,11 +86,6 @@ export default function DashboardPage() {
 
     checkOnboardingAndFetchRoles();
   }, [router, session]);
-
-  // const handleSwitch = (role: string) => {
-  //   setActiveRole(role);
-  //   if (typeof window !== "undefined") localStorage.setItem("activeRole", role);
-  // };
 
   if (loading) {
     return (

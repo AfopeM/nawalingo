@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import ProfileForm from "@/components/profile/ProfileForm";
+import { ProfileForm } from "@/features/user";
 import ProtectedRoute from "@/providers/auth/protected-route";
 import { useAuth } from "@/providers/auth/auth-provider";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms";
 
 export default function ProfilePage() {
   const [showSuccess, setShowSuccess] = useState(false);

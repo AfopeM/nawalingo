@@ -1,0 +1,10 @@
+export { default as CTASection } from "./CTASection";
+export { default as PricingCard } from "./PricingCard";
+export { default as HeroSection } from "./HeroSection";
+export { default as SectionHeading } from "./SectionHeading";
+export { default as SectionWrapper } from "./SectionWrapper";
+export { Tagline, Heading, Description } from "./Typography";
+export { default as PricingSection } from "./PricingSection";
+export { default as HowItWorksSection } from "./HowItWorksSection";
+export { default as ChooseLanguageSection } from "./ChooseLanguageSection";
+export { InfoCard, InfoCardHeading, InfoCardBody } from "./InfoCard";

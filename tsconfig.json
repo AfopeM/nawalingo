@@ -19,13 +19,13 @@
       }
     ],
     "paths": {
-      "@/ui/*": ["./src/components/ui/*"],
-      "@/forms/*": ["./src/components/forms/*"],
-      "@/navigation/*": ["./src/components/navigation/*"],
-      "@/layout/*": ["./src/components/layout/*"],
-      "@/common/*": ["./src/components/common/*"],
-      "@/section/*": ["./src/components/section/*"],
-
+      "@/components/atoms/*": ["./src/components/atoms/*"],
+      "@/components/molecules/*": ["./src/components/molecules/*"],
+      "@/components/organisms/*": ["./src/components/organisms/*"],
+      "@/features/tutor/*": ["./src/features/tutor/*"],
+      "@/features/student/*": ["./src/features/student/*"],
+      "@/features/auth/*": ["./src/features/auth/*"],
+      "@/marketing/*": ["./src/marketing/*"],
       "@/*": ["./src/*"]
     }
   },

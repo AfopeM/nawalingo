@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface AuthLinksProps {

@@ -1,10 +1,14 @@
 "use client";
-import { Button } from "@/common/Button";
 import React, { useState } from "react";
-import PricingCard from "@/ui/PricingCard";
-import SectionHeading from "@/common/SectionHeading";
+import { Button } from "@/components/atoms";
 import { pricingTiers } from "@/constants/pricing";
-import { Tagline, Heading, Description } from "@/common/Typography";
+import {
+  Tagline,
+  Heading,
+  PricingCard,
+  Description,
+  SectionHeading,
+} from "@/marketing";
 
 export default function PricingSection() {
   const [view, setView] = useState<"single" | "group">("single");

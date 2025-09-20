@@ -1,29 +1,30 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Button } from "@/common/Button";
-import { Separator } from "@/common/Separator";
-import HeroSection from "@/layout/HeroSection";
-import SectionWrapper from "@/layout/SectionWrapper";
-import SectionHeading from "@/common/SectionHeading";
-import { Tagline, Heading, Description } from "@/common/Typography";
-import {
-  InfoCard,
-  InfoCardHeading,
-  InfoCardBody,
-} from "@/components/ui/InfoCard";
+import { Button, Separator } from "@/components/atoms";
 import {
   WHY_TUTOR_WITH_NAWALINGO,
   WHO_SHOULD_APPLY,
 } from "@/constants/applyToTutor";
 import {
   FaCheck,
-  FaChalkboardTeacher,
   FaBookOpen,
-  FaHandHoldingUsd,
-  FaHandsHelping,
   FaLaptopHouse,
+  FaHandsHelping,
+  FaHandHoldingUsd,
+  FaChalkboardTeacher,
 } from "react-icons/fa";
-import CTASection from "@/components/section/CTASection";
+import {
+  Tagline,
+  Heading,
+  Description,
+  CTASection,
+  SectionHeading,
+  SectionWrapper,
+  HeroSection,
+  InfoCard,
+  InfoCardHeading,
+  InfoCardBody,
+} from "@/marketing";
 
 export const metadata: Metadata = {
   title: "Become a Nawalingo Language Tutor | Apply Now",

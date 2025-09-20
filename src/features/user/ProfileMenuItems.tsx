@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/common/Button";
-import { useAuth } from "@/providers/auth/auth-provider";
-import { useEffect, useState } from "react";
 import { hasRole } from "@/lib/roles";
+import { Button } from "@/components/atoms";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/providers/auth/auth-provider";
 
 export type Role = "student" | "tutor" | "admin";
 

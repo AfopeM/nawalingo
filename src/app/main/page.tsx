@@ -1,13 +1,16 @@
 import Link from "next/link";
-import { Button } from "@/common/Button";
-import { Separator } from "@/common/Separator";
 import { NAV_PATHS } from "@/constants";
-import HeroSection from "@/layout/HeroSection";
-import SectionWrapper from "@/layout/SectionWrapper";
-import PricingSection from "@/section/PricingSection";
-import HowItWorksSection from "@/section/HowItWorksSection";
-import { Tagline, Heading, Description } from "@/common/Typography";
-import ChooseLanguageSection from "@/section/ChooseLanguageSection";
+import { Button, Separator } from "@/components/atoms";
+import {
+  Tagline,
+  Heading,
+  HeroSection,
+  Description,
+  PricingSection,
+  SectionWrapper,
+  HowItWorksSection,
+  ChooseLanguageSection,
+} from "@/marketing";
 
 export default function MainPage() {
   return (

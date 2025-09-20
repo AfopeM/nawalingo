@@ -1,4 +1,4 @@
-import SectionHeading from "@/common/SectionHeading";
+import { SectionHeading } from "@/marketing";
 
 interface HeroSectionProps {
   children: React.ReactNode;
@@ -21,21 +21,3 @@ export default function HeroSection({ children }: HeroSectionProps) {
     </div>
   );
 }
-
-// const imgStyle =
-// "absolute hidden h-[200px] w-[200px] duration-300 lg:block xl:h-[280px] xl:w-[280px] object-contain";
-// <Image
-// width={280}
-// height={280}
-// alt="hero-image-1"
-// src="/hero/hero-1.png"
-// className={`${imgStyle} bottom-0 left-0 -translate-x-8 lg:-translate-x-[10%]`}
-// />
-
-// <Image
-// width={280}
-// height={280}
-// alt="hero-image-2"
-// src="/hero/hero-2.png"
-// className={`${imgStyle} right-0 bottom-0 -translate-x-12 scale-x-[-1]`}
-// />

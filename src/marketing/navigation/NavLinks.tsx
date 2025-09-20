@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { NAV_PATHS } from "@/constants";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms";
 
 interface NavLinksProps {
   isMobile?: boolean;

@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/common/Button";
-import { Separator } from "@/common/Separator";
+import { Button, Separator } from "@/components/atoms";
 import { useAuth } from "@/providers/auth/auth-provider";
 import ProtectedRoute from "@/providers/auth/protected-route";
-import LanguageSelection from "@/components/forms/LanguageSelection";
+import LanguageSelection from "@/features/user/LanguageSelection";
 
 // Steps in the tutor application flow
 type ApplicationStep = "intro" | "languages" | "experience";

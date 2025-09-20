@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms";
 import { motion, AnimatePresence } from "framer-motion";
-import TutorApplicationForm from "@/components/forms/TutorApplicationForm"; // Assuming this component exists
-import ThemeToggle from "@/ui/ThemeToggle"; // Assuming this component exists
+import { TutorApplicationForm } from "@/features/tutor"; // Assuming this component exists
+import ThemeToggle from "@/components/organisms/ThemeToggle"; // Assuming this component exists
 
 export default function ApplyToTeachPage() {
   const [showForm, setShowForm] = useState(false);
