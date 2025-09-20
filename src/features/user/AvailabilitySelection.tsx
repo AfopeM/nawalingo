@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { DAYS } from "@/constants";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import { formatTimeForDisplay } from "@/lib/time";
-import { Separator } from "@/common/Separator";
+import { Separator } from "@/components/atoms/Separator";
 
 const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => {
   const startHour24 = i;

@@ -9,7 +9,7 @@ import { AuthMode } from "@/constants";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({

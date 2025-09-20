@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/common/Button";
-import LanguageSelection from "@/components/forms/LanguageSelection";
-import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
-import TimezoneSelection from "@/components/forms/TimezoneSelection";
+import { Button } from "@/components/atoms/Button";
+import LanguageSelection from "@/features/user/LanguageSelection";
+import AvailabilitySelection from "@/features/user/AvailabilitySelection";
+import TimezoneSelection from "@/features/user/TimezoneSelection";
 import { useAuth } from "@/providers/auth/auth-provider";
-import { Separator } from "@/common/Separator";
-import { ProficiencyDropdown } from "@/components/forms/ProficiencyDropdown";
-import CountrySelection from "@/components/forms/CountrySelection";
+import { Separator } from "@/components/atoms/Separator";
+import { ProficiencyDropdown } from "@/features/user/ProficiencyDropdown";
+import CountrySelection from "@/features/user/CountrySelection";
 
 interface TimeSlot {
   day: string;

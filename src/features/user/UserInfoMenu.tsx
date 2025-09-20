@@ -9,7 +9,7 @@ import {
 } from "@/ui/DropdownMenu";
 import { hasRole } from "@/lib/roles";
 import Link from "next/link";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 
 export default function UserInfoMenu() {
   const { user, signOut } = useAuth();

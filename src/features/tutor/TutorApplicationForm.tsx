@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/common/Button";
-import { Separator } from "@/common/Separator";
-import { ProficiencyDropdown } from "@/components/forms/ProficiencyDropdown";
+import { Button } from "@/components/atoms/Button";
+import { Separator } from "@/components/atoms/Separator";
+import { ProficiencyDropdown } from "@/features/user/ProficiencyDropdown";
 import { useAuth } from "@/providers/auth/auth-provider";
-import LanguageSelection from "@/components/forms/LanguageSelection";
+import LanguageSelection from "@/features/user/LanguageSelection";
 
 // Steps in the tutor application flow
 type ApplicationStep = "intro" | "languages" | "experience";

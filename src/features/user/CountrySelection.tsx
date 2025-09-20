@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
 } from "@/ui/DropdownMenu";
 import { FaSortDown } from "react-icons/fa6";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import { countries as COUNTRIES_MAP } from "countries-list";
 
 interface CountrySelectionProps {

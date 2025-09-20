@@ -5,7 +5,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/ui/DropdownMenu";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import { LANGUAGE_PROFICIENCY } from "@/constants";
 import { FaSortDown } from "react-icons/fa6";
 

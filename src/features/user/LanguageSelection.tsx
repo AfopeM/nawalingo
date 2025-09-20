@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import { FaSortDown } from "react-icons/fa6";
 import { AVAILABLE_LANGUAGES, LANGUAGE_DIFFICULTY } from "@/constants";
 import {

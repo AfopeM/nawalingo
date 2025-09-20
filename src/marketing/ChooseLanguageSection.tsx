@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Button } from "@/common/Button";
-import SectionHeading from "@/common/SectionHeading";
+import { Button } from "@/components/atoms/Button";
+import SectionHeading from "@/marketing/SectionHeading";
 import { IoLanguageSharp } from "react-icons/io5";
-import { Tagline, Heading, Description } from "@/common/Typography";
+import { Tagline, Heading, Description } from "@/marketing/Typography";
 import { mostPopularLanguages as mostPopularLanguageData } from "@/constants/languages";
 
 export default function ChooseLanguageSection() {

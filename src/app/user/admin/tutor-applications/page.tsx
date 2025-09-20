@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import ProtectedRoute from "@/providers/auth/protected-route";
 import { useAuth } from "@/providers/auth/auth-provider";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 
 interface TutorApplication {
   user: {

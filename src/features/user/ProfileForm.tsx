@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/common/Button";
-import { Separator } from "@/common/Separator";
-import LanguageSelection from "@/components/forms/LanguageSelection";
-import AvailabilitySelection from "@/components/forms/AvailabilitySelection";
-import TimezoneSelection from "@/components/forms/TimezoneSelection";
+import { Button } from "@/components/atoms/Button";
+import { Separator } from "@/components/atoms/Separator";
+import LanguageSelection from "@/features/user/LanguageSelection";
+import AvailabilitySelection from "@/features/user/AvailabilitySelection";
+import TimezoneSelection from "@/features/user/TimezoneSelection";
 import { useAuth } from "@/providers/auth/auth-provider";
 
 interface TimeSlot {

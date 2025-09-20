@@ -1,7 +1,7 @@
 "use client";
 
 import { FaSortDown } from "react-icons/fa6";
-import { Button } from "@/common/Button";
+import { Button } from "@/components/atoms/Button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

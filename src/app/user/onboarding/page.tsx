@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import OnboardingForm from "@/components/forms/OnboardingForm";
+import OnboardingForm from "@/features/student/OnboardingForm";
 
 export const metadata: Metadata = {
   title: "Onboarding | Start Learning Today",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description:
       "Join Nawalingo and access live language lessons with certified tutors. Experience real conversations, cultural immersion, and personalized learning paths.",
   },
-}; 
+};
 
 export default function OnboardingPage() {
   return <OnboardingForm />;
